@@ -1,0 +1,49 @@
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+
+# Python Virtual Environments
+venv/
+.venv/
+env/
+
+# Environment Variables and Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# IDE and Editor Files
+.idea/
+.vscode/
+*.code-workspace
+
+# Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+
+# Node.js (if used)
+node_modules/
+npm-debug.log*
+
+# Flask
+instance/
+*.sqlite3
+
+# Logs and Temporary Files
+*.log
+*.tmp
+*.bak
+
+# Build Files
+dist/
+build/
