@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CCMC RetailFlow | Login</title>
+
+        <!-- Bootstrap 5 -->
+        <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        >
+
+        <!-- Login Styling -->
+        <link rel="stylesheet" href="style.css">
+
+        <!-- Global Button Styling -->
+        <link rel="stylesheet" href="css/buttons.css">
+
+        <body>
+
+            <main class="container-fluid">
+                <div class="row min-vh-100">
+
+                    <!-- LEFT PANEL: BRANDING -->
+                    <section class="col-lg-6 bg-dark text-white p-5">
+
+                        <h4 class="fw-bold mb-5">
+                            CCMC RetailFlow
+                        </h4>
+
+                        <div class="mt-5">
+
+                            <h1 class="display-5 fw-bold">
+                                Your store.<br>
+                                One clear workspace.
+                            </h1>
+
+                            <p class="mt-4">
+                                Keep sales, reservations and inventory
+                                moving together — from the first scan
+                                to the end of your day.
+                            </p>
+
+                            <div class="mt-5">
+                            <p>✓ Fast, accurate checkout</p>
+                            <p>✓ Stock you can keep track of</p>
+                            <p>✓ A clearer view of your business</p>
+                            </div>
+
+                        </div>
+
+                        <p class="mt-5">
+                            CCMC · Store operations, simplified.
+                        </p>
+
+                    </section>
+
+                    <!-- RIGHT PANEL: LOGIN -->
+                    <section class="col-lg-6 bg-white p-5">
+
+                        <div class="mx-auto" style="max-width: 450px;">
+
+                            <!-- ROLE SELECTION -->
+                            <div id="roleSelection">
+
+                                <h2 class="fw-bold">
+                                    Welcome back
+                                </h2>
+
+                                <p class="text-secondary">
+                                    Sign in with your CCMC account
+                                    to continue.
+                                </p>
+
+                                <div class="d-grid gap-3 mt-5">
+
+                                    <button
+                                    type="button"
+                                    id="staffRoleBtn"
+                                    class="btn btn-primary btn-lg">
+                                    Staff
+                                </button>
+
+                                <button
+                                type="button"
+                                id="ownerRoleBtn"
+                                class="btn btn-primary btn-lg">
+                                Owner
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- LOGIN FORM -->
+                    <div id="loginSection" class="d-none">
+
+                        <p
+                        id="roleLabel"
+                        class="text-uppercase fw-semibold">
+                        Secure Account Access
+                    </p>
+
+                    <h2 class="fw-bold">
+                        Welcome back
+                    </h2>
+
+                    <p class="text-secondary mb-4">
+                        Sign in with your CCMC account
+                        to continue.
+                    </p>
+
+                    <!-- ERROR MESSAGE -->
+                    <div
+                    id="loginError"
+                    class="alert alert-danger d-none"
+                    role="alert">
+                </div>
+
+                <form id="loginForm">
+
+                    <!-- USERNAME -->
+                    <div class="mb-3">
+
+                        <label
+                        for="username"
+                        class="form-label">
+                        Username *
+                    </label>
+
+                    <input
+                    type="text"
+                    id="username"
+                    class="form-control"
+                    placeholder="Enter your username"
+                    autocomplete="username"
+                    required>
+
+                </div>
+
+                <!-- PASSWORD -->
+                <div class="mb-4">
+
+                    <label
+                    for="password"
+                    class="form-label">
+                    Password *
+                </label>
+
+                <input
+                type="password"
+                id="password"
+                class="form-control"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required>
+
+            </div>
+
+            <!-- SIGN IN BUTTON -->
+            <button
+            type="submit"
+            id="signInBtn"
+            class="btn btn-primary w-100">
+            Sign in
+        </button>
+
+    </form>
+
+    <!-- BACK BUTTON -->
+    <button
+    type="button"
+    id="backToRoleBtn"
+    class="btn btn-outline-secondary mt-3">
+    Back to Role
+</button>
+
+</div>
+
+<!-- ACCOUNT INFORMATION -->
+<p class="text-secondary small mt-5">
+    Your account determines your workspace.
+    Staff and Owners see only the tools
+    available to their role.
+</p>
+
+<hr>
+
+<h6 class="fw-bold mt-4">
+    Need access?
+</h6>
+
+<p class="text-secondary small">
+    Ask your store owner to create
+    or reactivate your account.
+</p>
+
+</div>
+
+</section>
+
+</div>
+</main>
+
+<!-- Bootstrap 5 JavaScript -->
+<script
+src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+<!-- Login JavaScript -->
+<script src="auth.js"></script>
+
+</body>
+</html>

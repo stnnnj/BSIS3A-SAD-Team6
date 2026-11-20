@@ -1,0 +1,471 @@
+
+/* ==========================================
+CCMC RETAILFLOW – LOGIN DESIGN
+Bootstrap 5 Custom Styling
+========================================== */
+
+/* COLOR PALETTE */
+
+:root {
+    --midnight: #0B1320;
+    --navy: #1F3A5F;
+    --off-white: #F7F5F2;
+    --gold: #FFB703;
+    --teal: #2A9D8F;
+
+    --text: #19283A;
+    --muted: #617083;
+    --border: #DCE3EA;
+}
+
+/* ==========================================
+GLOBAL STYLES
+========================================== */
+
+* {
+box-sizing: border-box;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: var(--text);
+    background: var(--off-white);
+}
+
+.container-fluid {
+    padding: 0;
+}
+
+/* ==========================================
+LEFT BRANDING PANEL
+========================================== */
+
+section.bg-dark {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    background: linear-gradient(
+        145deg,
+        var(--midnight) 0%,
+        #142740 40%,
+        var(--navy) 100%
+    ) !important;
+}
+
+/* Decorative Teal Glow */
+
+section.bg-dark::before {
+    content: "";
+    position: absolute;
+
+    width: 420px;
+    height: 420px;
+
+    top: -160px;
+    right: -160px;
+
+    border-radius: 50%;
+
+    background: radial-gradient(
+        circle,
+        rgba(42, 157, 143, 0.25),
+        transparent 70%
+    );
+
+    filter: blur(20px);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Decorative Gold Glow */
+
+section.bg-dark::after {
+    content: "";
+    position: absolute;
+
+    width: 380px;
+    height: 380px;
+
+    bottom: -180px;
+    left: -120px;
+
+    border-radius: 50%;
+
+    background: radial-gradient(
+        circle,
+        rgba(255, 183, 3, 0.12),
+        transparent 70%
+    );
+
+    filter: blur(25px);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Branding Typography */
+
+section.bg-dark h4 {
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: #FFFFFF;
+}
+
+section.bg-dark h1 {
+    font-weight: 750;
+    letter-spacing: -1.5px;
+    line-height: 1.15;
+    color: #FFFFFF;
+}
+
+/* Gold-to-Teal Accent */
+
+section.bg-dark h1::after {
+    content: "";
+    display: block;
+
+    width: 65px;
+    height: 4px;
+
+    margin-top: 25px;
+
+    background: linear-gradient(
+        90deg,
+        var(--gold),
+        var(--teal)
+    );
+
+    border-radius: 10px;
+}
+
+/* Branding Description */
+
+section.bg-dark h1 + p {
+    max-width: 480px;
+    color: #D6E0EA;
+    line-height: 1.8;
+    font-size: 16px;
+}
+
+/* ==========================================
+GLASSMORPHISM FEATURE CARD
+========================================== */
+
+section.bg-dark h1 + p + div {
+    max-width: 480px;
+    padding: 28px 30px;
+
+    background: rgba(255, 255, 255, 0.08);
+
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 20px;
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    section.bg-dark h1 + p + div p {
+        margin-bottom: 16px;
+        color: #F1F5F9;
+        font-size: 15px;
+    }
+
+    section.bg-dark h1 + p + div p:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Bottom Branding Text */
+
+    section.bg-dark > p:last-child {
+        color: #AABACB;
+        font-size: 13px;
+        letter-spacing: 0.2px;
+    }
+
+    /* ==========================================
+    RIGHT LOGIN PANEL
+    ========================================== */
+
+    section.bg-white {
+        position: relative;
+        overflow: hidden;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: linear-gradient(
+            135deg,
+            var(--off-white) 0%,
+            #EDF1F4 55%,
+            #E5ECEF 100%
+        ) !important;
+    }
+
+    /* Decorative Teal Glow */
+
+    section.bg-white::before {
+        content: "";
+        position: absolute;
+
+        width: 350px;
+        height: 350px;
+
+        top: -170px;
+        right: -140px;
+
+        border-radius: 50%;
+
+        background: rgba(42, 157, 143, 0.1);
+        filter: blur(45px);
+
+        pointer-events: none;
+    }
+
+    /* ==========================================
+    GLASSMORPHISM LOGIN CONTAINER
+    ========================================== */
+
+    section.bg-white > .mx-auto {
+        position: relative;
+        z-index: 1;
+
+        width: 100%;
+        max-width: 470px !important;
+        padding: 42px;
+
+        background: rgba(255, 255, 255, 0.8);
+
+        border: 1px solid rgba(255, 255, 255, 0.95);
+        border-radius: 24px;
+
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+
+        box-shadow:
+            0 20px 60px rgba(11, 19, 32, 0.09),
+            0 4px 12px rgba(11, 19, 32, 0.03);
+        }
+
+
+        /* ==========================================
+        CCMC RETAILFLOW
+        GOLD-TO-TEAL BUTTON HOVER ANIMATION
+        ========================================== */
+
+        .btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Gradient line hidden by default */
+        .btn::after {
+            content: "";
+            position: absolute;
+
+            bottom: 0;
+            left: 50%;
+
+            width: 0;
+            height: 4px;
+
+            background: linear-gradient(
+                90deg,
+                #FFB703,
+                #2A9D8F
+            );
+
+            border-radius: 4px 4px 0 0;
+            transform: translateX(-50%);
+
+            transition: width 0.3s ease;
+            pointer-events: none;
+        }
+
+        /* Animate from center to both sides */
+        .btn:not(:disabled):not(.disabled):hover::after,
+        .btn:focus-visible::after {
+            width: 100%;
+        }
+
+        /* Disabled buttons have no animation */
+        .btn:disabled::after,
+        .btn.disabled::after {
+            width: 0;
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            .btn::after {
+                transition: none;
+            }
+        }
+
+        /* ==========================================
+        LOGIN TYPOGRAPHY
+        ========================================== */
+
+        section.bg-white h2 {
+            font-weight: 700;
+            color: var(--midnight);
+            letter-spacing: -0.8px;
+        }
+
+        section.bg-white h6 {
+            color: var(--navy);
+        }
+
+        section.bg-white .text-secondary {
+            color: var(--muted) !important;
+            line-height: 1.7;
+        }
+
+        #roleLabel {
+            color: var(--teal);
+            font-size: 12px;
+            letter-spacing: 1.2px;
+        }
+
+        section.bg-white hr {
+            border-color: #D8E0E7;
+            opacity: 0.8;
+        }
+
+        /* ==========================================
+        BOOTSTRAP 5 FORM CUSTOMIZATION
+        ========================================== */
+
+        .form-label {
+            color: var(--navy);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.95);
+
+            border: 1px solid var(--border);
+            border-radius: 12px;
+
+            padding: 13px 15px;
+            color: var(--midnight);
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+            }
+
+            .form-control::placeholder {
+                color: #8B97A5;
+            }
+
+            .form-control:focus {
+                background: #FFFFFF;
+                border-color: var(--teal);
+
+                box-shadow:
+                    0 0 0 4px rgba(42, 157, 143, 0.13);
+
+                    outline: none;
+                }
+
+                /* ==========================================
+                LOGIN ERROR MESSAGES
+                ========================================== */
+
+                .alert-danger {
+                    background: #FFF1F0;
+                    border: 1px solid #F2C9C6;
+                    color: #9B2929;
+
+                    border-radius: 12px;
+                    padding: 14px 16px;
+                    font-size: 14px;
+                }
+
+
+                /* ==========================================
+                LOGIN VALIDATION FEEDBACK
+                ========================================== */
+
+                .form-control.is-invalid {
+                    border-color: #C44750;
+                    background-color: #FFF8F8;
+                }
+
+                .form-control.is-invalid:focus {
+                    border-color: #C44750;
+
+                    box-shadow:
+                        0 0 0 4px rgba(196, 71, 80, 0.12);
+                    }
+
+                    /* Error alert */
+                    #loginError.alert-danger {
+                        border-left: 4px solid #C44750;
+                    }
+
+                    /* Successful login alert */
+                    #loginError.alert-success {
+                        background: #EAF7F3;
+                        border: 1px solid #B4DDD2;
+                        border-left: 4px solid #2A9D8F;
+
+                        color: #176B61;
+                        border-radius: 12px;
+                    }
+
+                    /* ==========================================
+                    RESPONSIVE DESIGN
+                    ========================================== */
+
+                    @media (max-width: 991.98px) {
+
+                        section.bg-dark {
+                            min-height: auto;
+                            padding: 45px 25px !important;
+                        }
+
+                        section.bg-dark h1 {
+                            font-size: 36px;
+                        }
+
+                        section.bg-white {
+                            min-height: auto;
+                            padding: 45px 20px !important;
+                        }
+
+                        section.bg-white > .mx-auto {
+                            padding: 32px 26px;
+                        }
+                    }
+
+                    @media (max-width: 575.98px) {
+
+                        section.bg-dark h1 {
+                            font-size: 30px;
+                        }
+
+                        section.bg-dark h1 + p + div {
+                            padding: 22px;
+                        }
+
+                        section.bg-white > .mx-auto {
+                            padding: 26px 20px;
+                            border-radius: 18px;
+                        }
+                    }
