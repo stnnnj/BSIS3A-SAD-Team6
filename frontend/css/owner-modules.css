@@ -1,0 +1,14 @@
+/* Locked CCMC RetailFlow owner theme. Shared across all modules. */
+:root{--rf-navy:#0B1320;--rf-blue:#1F3A5F;--rf-teal:#2A9D8F;--rf-cream:#F7F5F2}
+.dashboard-sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;scrollbar-width:thin}
+.dashboard-sidebar .nav-link{font-size:14px}.dashboard-content{max-width:1550px;margin:auto}
+.surface{background:rgba(255,255,255,.94);border:1px solid #e9edf1;border-radius:18px;box-shadow:0 10px 35px rgba(11,19,32,.06)}
+.stat-card{padding:24px;transition:transform .2s ease,box-shadow .2s ease}.stat-card:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(11,19,32,.12)}
+.stat-label{font-size:13px;color:#6b7887;font-weight:600}.stat-number{font-size:28px;font-weight:750;color:#0B1320;margin-top:7px}
+.btn-primary{background:#1F3A5F;border-color:#1F3A5F}.btn-primary:hover,.btn-primary:focus{background:#2A9D8F;border-color:#2A9D8F;transform:translateY(-2px)}
+.btn{transition:background .2s ease,transform .2s ease,box-shadow .2s ease}.btn:active{transform:scale(.97)}
+.table thead th{font-size:12px;letter-spacing:.03em;color:#637083;background:#f4f7fa;border-bottom:0;white-space:nowrap}.table td{padding:14px 12px;vertical-align:middle;font-size:14px}.table tbody tr{transition:background .2s}.table tbody tr:hover{background:#f3faf9}
+.table-responsive{border-radius:12px}.search-box{max-width:320px}.module-enter{animation:fadeUp .4s ease both}@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.form-control:focus,.form-select:focus{border-color:#2A9D8F;box-shadow:0 0 0 .2rem rgba(42,157,143,.13)}.pill{border-radius:99px;padding:5px 11px;background:#e6f6f3;color:#13766b;font-size:12px;font-weight:600}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@media(max-width:767px){.dashboard-sidebar{position:relative;height:auto;min-height:auto}.dashboard-sidebar nav{max-height:260px;overflow:auto}}

@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CCMC RetailFlow | Reports</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Original dashboard and button design remain unchanged -->
+    <link rel="stylesheet" href="/frontend/dashboard/dashboard.css" />
+    <link rel="stylesheet" href="/frontend/css/buttons.css" />
+    <!-- This module's OWN stylesheet -->
+    <link rel="stylesheet" href="/frontend/reports/reports.css" />
+  </head>
+  <body data-role="Owner" data-module="reports">
+    <div class="container-fluid">
+      <div class="row min-vh-100">
+        <aside class="col-md-3 col-lg-2 dashboard-sidebar p-4 rf-sidebar">
+          <h4 class="fw-bold text-white mb-1">CCMC RetailFlow</h4>
+          <p class="sidebar-subtitle mb-5">RETAIL MANAGEMENT SYSTEM</p>
+          <nav class="nav flex-column gap-2" aria-label="Owner modules">
+            <a href="/frontend/owner-dashboard.html" class="nav-link"
+              >Dashboard</a
+            >
+            <a href="/frontend/sales/sales.html" class="nav-link"
+              >Sales / POS</a
+            >
+            <a href="/frontend/reservations/reservations.html" class="nav-link"
+              >Reservations</a
+            >
+            <a href="/frontend/returns/returns.html" class="nav-link"
+              >Returns & Refunds</a
+            >
+            <a href="/frontend/inventory/inventory.html" class="nav-link"
+              >Inventory</a
+            >
+            <a href="/frontend/products/products.html" class="nav-link"
+              >Products</a
+            >
+            <a href="/frontend/suppliers/suppliers.html" class="nav-link"
+              >Suppliers</a
+            >
+            <a href="/frontend/financial/financial.html" class="nav-link"
+              >Financial Analytics</a
+            >
+            <a
+              href="/frontend/reports/reports.html"
+              class="nav-link active"
+              aria-current="page"
+              >Reports</a
+            >
+            <a href="/frontend/users/users.html" class="nav-link"
+              >User Accounts</a
+            >
+          </nav>
+          <div class="sidebar-footer mt-5">
+            <p class="text-white mb-2">Signed in as Owner</p>
+            <button
+              id="logoutBtn"
+              type="button"
+              class="btn btn-outline-light w-100"
+            >
+              Logout
+            </button>
+          </div>
+        </aside>
+        <main class="col-md-9 col-lg-10 dashboard-main p-0">
+          <header class="dashboard-header p-4">
+            <div
+              class="d-flex justify-content-between align-items-center gap-3 flex-wrap"
+            >
+              <div>
+                <h5 class="fw-bold mb-1">Reports</h5>
+                <p class="text-secondary mb-0">CCMC RetailFlow / Reports</p>
+              </div>
+              <span class="badge text-bg-light">Owner Workspace</span>
+            </div>
+          </header>
+          <section class="dashboard-content p-4 rf-content">
+            <div
+              class="rf-heading d-flex justify-content-between align-items-start gap-3 flex-wrap"
+            >
+              <div>
+                <div class="rf-eyebrow">STORE PERFORMANCE</div>
+                <h2 class="fw-bold mt-1 mb-2">Reports</h2>
+                <p class="text-secondary mb-0">
+                  Review sales and operations, filter records, and export report
+                  data.
+                </p>
+              </div>
+              <div class="d-flex gap-2 flex-wrap">
+                <button
+                  id="refreshBtn"
+                  type="button"
+                  class="btn btn-outline-secondary"
+                >
+                  ↻ Refresh</button
+                ><button id="exportBtn" type="button" class="btn btn-primary">
+                  ↓ Export CSV
+                </button>
+              </div>
+            </div>
+            <div
+              id="notice"
+              class="rf-notice mt-3"
+              role="status"
+              aria-live="polite"
+            ></div>
+
+            <div class="rf-card rf-filter-panel mt-4">
+              <form id="reportForm" class="row g-3 align-items-end">
+                <div class="col-lg-4 col-md-6">
+                  <label for="reportType" class="form-label">Report Type</label
+                  ><select id="reportType" class="form-select">
+                    <option value="sales">Sales Transactions</option>
+                    <option value="reservations">Reservations</option>
+                    <option value="returns">Returns & Refunds</option>
+                    <option value="inventory">Inventory Movements</option>
+                    <option value="low-stock">Low Stock Items</option>
+                  </select>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                  <label for="startDate" class="form-label">From Date</label
+                  ><input
+                    id="startDate"
+                    type="date"
+                    class="form-control"
+                    required
+                  />
+                </div>
+                <div class="col-lg-3 col-md-6">
+                  <label for="endDate" class="form-label">To Date</label
+                  ><input
+                    id="endDate"
+                    type="date"
+                    class="form-control"
+                    required
+                  />
+                </div>
+                <div class="col-lg-2 col-md-6">
+                  <button
+                    id="generateBtn"
+                    type="submit"
+                    class="btn btn-primary w-100"
+                  >
+                    Generate
+                  </button>
+                </div>
+              </form>
+              <p id="filterNote" class="rf-help mt-3 mb-0">
+                Choose report and dates, then generate.
+              </p>
+            </div>
+            <div class="row g-3 mt-2">
+              <div class="col-sm-6 col-xl-3">
+                <article class="rf-card rf-stat">
+                  <span class="rf-stat-label">Completed Sales</span
+                  ><strong id="statSales" class="rf-stat-number">—</strong
+                  ><span class="rf-stat-note">Selected date range</span>
+                </article>
+              </div>
+              <div class="col-sm-6 col-xl-3">
+                <article class="rf-card rf-stat">
+                  <span class="rf-stat-label">Gross Sales</span
+                  ><strong id="statGross" class="rf-stat-number">—</strong
+                  ><span class="rf-stat-note">Completed transaction total</span>
+                </article>
+              </div>
+              <div class="col-sm-6 col-xl-3">
+                <article class="rf-card rf-stat">
+                  <span class="rf-stat-label">Recorded Refunds</span
+                  ><strong id="statRefunds" class="rf-stat-number">—</strong
+                  ><span class="rf-stat-note">Recorded return amounts</span>
+                </article>
+              </div>
+              <div class="col-sm-6 col-xl-3">
+                <article class="rf-card rf-stat">
+                  <span class="rf-stat-label">Stock Movements</span
+                  ><strong id="statMovements" class="rf-stat-number">—</strong
+                  ><span class="rf-stat-note">Transactions in period</span>
+                </article>
+              </div>
+            </div>
+            <section class="rf-card mt-4" aria-labelledby="trendHeading">
+              <div class="rf-card-heading">
+                <h3 id="trendHeading">Recent Sales Activity</h3>
+                <p>
+                  Completed sales by day within the selected period (up to 14
+                  recorded days)
+                </p>
+              </div>
+              <div id="salesTrend" class="rf-chart" aria-live="polite">
+                Loading activity…
+              </div>
+            </section>
+            <section class="rf-card mt-4" aria-labelledby="reportHeading">
+              <div
+                class="rf-card-heading d-flex align-items-center justify-content-between flex-wrap gap-2"
+              >
+                <div>
+                  <h3 id="reportHeading">Sales Transactions</h3>
+                  <p id="reportDescription">
+                    Detailed records matching your selected filters
+                  </p>
+                </div>
+                <span class="rf-count" id="resultCount">0 records</span>
+              </div>
+              <div class="rf-table-tools">
+                <label class="visually-hidden" for="searchInput"
+                  >Search displayed report records</label
+                ><input
+                  id="searchInput"
+                  type="search"
+                  class="form-control"
+                  placeholder="Search report rows…"
+                />
+                <p id="truncationNotice" class="rf-help mb-0" hidden>
+                  Showing the first 5,000 records only. Narrow the date range
+                  before exporting a complete report.
+                </p>
+              </div>
+              <div class="table-responsive rf-table-wrap">
+                <table class="table align-middle mb-0">
+                  <thead id="reportHead">
+                    <tr>
+                      <th>Loading…</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reportBody">
+                    <tr>
+                      <td class="rf-empty">Loading report…</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- This module's OWN JavaScript; no shared owner-modules.js required -->
+    <script src="/frontend/reports/reports.js" defer></script>
+  </body>
+</html>
