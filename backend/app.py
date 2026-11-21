@@ -18,7 +18,6 @@ from werkzeug.security import check_password_hash
 
 from db import get_db_connection
 
-
 # ==========================================
 # ENVIRONMENT CONFIGURATION
 # ==========================================
@@ -34,6 +33,15 @@ from suppliers import suppliers_bp
 
 app.register_blueprint(products_bp)
 app.register_blueprint(suppliers_bp)
+
+from staff_dashboard import staff_dashboard_bp
+app.register_blueprint(staff_dashboard_bp)
+
+from owner_dashboard import owner_dashboard_bp
+app.register_blueprint(owner_dashboard_bp)
+
+from users import users_bp
+app.register_blueprint(users_bp)
 
 secret_key = os.getenv("FLASK_SECRET_KEY")
 
@@ -87,10 +95,17 @@ FRONTEND_DIR = BASE_DIR / "frontend"
 FRONTEND_DIR = BASE_DIR / "frontend"
 
 
+# ==========================================
+# PROTECTED FRONTEND ROUTES
+# ==========================================
+
+FRONTEND_DIR = BASE_DIR / "frontend"
+
+
 @app.get("/frontend/<path:filename>")
 def frontend_files(filename):
 
-    # Owner dashboard: Owner access only
+    # Owner Dashboard: Owner access only
     if filename == "owner-dashboard.html":
 
         if "user_id" not in session:
@@ -99,20 +114,30 @@ def frontend_files(filename):
         if session.get("role") != "Owner":
             return redirect("/frontend/staff-dashboard.html")
 
-    # Staff dashboard: Staff access only
+    # Staff Dashboard: Staff access only
     if filename == "staff-dashboard.html":
 
         if "user_id" not in session:
             return redirect("/frontend/index.html")
 
         if session.get("role") != "Staff":
+
             if session.get("role") == "Owner":
                 return redirect("/frontend/owner-dashboard.html")
 
             return redirect("/frontend/index.html")
 
-    return send_from_directory(FRONTEND_DIR, filename)
+    # User Accounts: Owner access only
+    if filename == "users/users.html":
 
+        if "user_id" not in session:
+            return redirect("/frontend/index.html")
+
+        if session.get("role") != "Owner":
+            return redirect("/frontend/staff-dashboard.html")
+
+    # Serve frontend files
+    return send_from_directory(FRONTEND_DIR, filename)
 
 # ==========================================
 # AUTHENTICATION HELPERS
