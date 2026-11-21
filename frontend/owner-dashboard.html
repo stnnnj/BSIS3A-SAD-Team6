@@ -1,174 +1,524 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>CCMC RetailFlow | Owner Dashboard</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <!-- Bootstrap 5 CSS -->
-        <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-        >
+    <title>CCMC RetailFlow | Owner Dashboard</title>
 
-        <!-- Dashboard CSS -->
-        <link rel="stylesheet" href="dashboard/dashboard.css">
+    <!-- Bootstrap 5 CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
 
-        <!-- Global Button CSS -->
-        <link rel="stylesheet" href="css/buttons.css">
-    </head>
+    <!-- Shared Dashboard CSS -->
+    <link rel="stylesheet" href="dashboard/dashboard.css">
 
-    <body data-role="Owner">
+    <!-- Global Button CSS -->
+    <link rel="stylesheet" href="css/buttons.css">
+</head>
 
-        <div class="container-fluid">
-            <div class="row min-vh-100">
+<body data-role="Owner">
 
-                <!-- SIDEBAR -->
-                <aside class="col-md-3 col-lg-2 dashboard-sidebar p-4">
+    <div class="container-fluid">
+        <div class="row min-vh-100">
 
-                    <h4 class="fw-bold text-white mb-1">
-                        CCMC RetailFlow
-                    </h4>
+            <!-- =====================================
+                 OWNER SIDEBAR
+                 ===================================== -->
 
-                    <p class="sidebar-subtitle mb-5">
-                        RETAIL MANAGEMENT SYSTEM
+            <aside class="col-md-3 col-lg-2 dashboard-sidebar p-4">
+
+                <h4 class="fw-bold text-white mb-1">
+                    CCMC RetailFlow
+                </h4>
+
+                <p class="sidebar-subtitle mb-5">
+                    RETAIL MANAGEMENT SYSTEM
+                </p>
+
+                <!-- OWNER NAVIGATION -->
+                <nav
+                    class="nav flex-column gap-2"
+                    aria-label="Owner navigation"
+                >
+
+                    <a
+                        href="owner-dashboard.html"
+                        class="nav-link active"
+                        aria-current="page">
+                        Dashboard
+                    </a>
+
+                    <a href="sales/sales.html" class="nav-link">
+                        Sales / POS
+                    </a>
+
+                    <a href="reservations/reservations.html" class="nav-link">
+                        Reservations
+                    </a>
+
+                    <a href="returns/returns.html" class="nav-link">
+                        Returns & Refunds
+                    </a>
+
+                    <a href="inventory/inventory.html" class="nav-link">
+                        Inventory
+                    </a>
+
+                    <a href="products/products.html" class="nav-link">
+                        Products
+                    </a>
+
+                    <a href="suppliers/suppliers.html" class="nav-link">
+                        Suppliers
+                    </a>
+
+                    <a href="financial/financial.html" class="nav-link">
+                        Financial Analytics
+                    </a>
+
+                    <a href="reports/reports.html" class="nav-link">
+                        Reports
+                    </a>
+
+                    <a href="users/users.html" class="nav-link">
+                        User Accounts
+                    </a>
+
+                </nav>
+
+                <!-- SESSION / LOGOUT -->
+                <div class="sidebar-footer mt-5">
+
+                    <p class="text-white mb-2">
+                        Signed in as Owner
                     </p>
 
-                    <!-- NAVIGATION -->
-                    <nav class="nav flex-column gap-2">
+                    <button
+                        type="button"
+                        id="logoutBtn"
+                        class="btn btn-outline-light w-100">
+                        Logout
+                    </button>
 
-                        <a href="owner-dashboard.html"
-                           class="nav-link active">
-                            Dashboard
-                        </a>
+                </div>
 
-                        <a href="#" class="nav-link">
-                            Sales / POS
-                        </a>
+            </aside>
 
-                        <a href="#" class="nav-link">
-                            Reservations
-                        </a>
+            <!-- =====================================
+                 MAIN CONTENT
+                 ===================================== -->
 
-                        <a href="#" class="nav-link">
-                            Returns & Refunds
-                        </a>
+            <main class="col-md-9 col-lg-10 dashboard-main p-0">
 
-                        <a href="#" class="nav-link">
-                            Inventory
-                        </a>
+                <!-- DASHBOARD HEADER -->
+                <header class="dashboard-header p-4">
 
-                        <!-- Products Module -->
-                        <a href="/frontend/products/products.html"
-                           class="nav-link">
-                            Products
-                        </a>
+                    <div class="d-flex justify-content-between
+                                align-items-center flex-wrap gap-3">
 
-                        <!-- Suppliers Module -->
-                        <a href="/frontend/suppliers/suppliers.html"
-                           class="nav-link">
-                            Suppliers
-                        </a>
+                        <div>
+                            <h5 class="fw-bold mb-1">
+                                Owner Dashboard
+                            </h5>
 
-                        <a href="#" class="nav-link">
-                            Financial Analytics
-                        </a>
+                            <p class="text-secondary mb-0">
+                                CCMC RetailFlow / Dashboard
+                            </p>
+                        </div>
 
-                        <a href="#" class="nav-link">
-                            Reports
-                        </a>
-
-                        <a href="#" class="nav-link">
-                            User Accounts
-                        </a>
-
-                    </nav>
-
-                    <!-- SESSION / LOGOUT -->
-                    <div class="sidebar-footer mt-5">
-
-                        <p class="text-white mb-2">
-                            Signed in as Owner
-                        </p>
-
-                        <button
-                            type="button"
-                            id="logoutBtn"
-                            class="btn btn-outline-light w-100">
-                            Logout
-                        </button>
+                        <span class="badge text-bg-light">
+                            Owner Workspace
+                        </span>
 
                     </div>
 
-                </aside>
+                </header>
 
-                <!-- MAIN CONTENT -->
-                <main class="col-md-9 col-lg-10 dashboard-main p-0">
+                <!-- =====================================
+                     OWNER DASHBOARD CONTENT
+                     ===================================== -->
 
-                    <!-- HEADER -->
-                    <header class="dashboard-header p-4">
+                <section class="dashboard-content p-4">
 
-                        <div class="d-flex justify-content-between align-items-center">
+                    <!-- PAGE TITLE -->
+                    <div class="d-flex justify-content-between
+                                align-items-center flex-wrap gap-3 mb-4">
 
-                            <div>
-                                <h5 class="fw-bold mb-1">
-                                    Owner Dashboard
-                                </h5>
+                        <div>
+                            <h2 class="fw-bold mb-1">
+                                Store Overview
+                            </h2>
 
-                                <p class="text-secondary mb-0">
-                                    CCMC RetailFlow / Dashboard
-                                </p>
+                            <p class="text-secondary mb-0">
+                                Monitor your sales, inventory,
+                                and store performance.
+                            </p>
+                        </div>
+
+                        <a
+                            href="reports/reports.html"
+                            class="btn btn-primary">
+                            View Reports
+                        </a>
+
+                    </div>
+
+                    <!-- =====================================
+                         SUMMARY CARDS
+                         ===================================== -->
+
+                    <div class="row g-4 mb-4">
+
+                        <!-- TOTAL SALES TODAY -->
+                        <div class="col-12 col-sm-6 col-xl-3">
+
+                            <div class="card h-100 owner-stat-card">
+
+                                <div class="card-body p-4">
+
+                                    <p class="text-secondary mb-2">
+                                        Total Sales Today
+                                    </p>
+
+                                    <h3
+                                        id="totalSalesToday"
+                                        class="fw-bold mb-2"
+                                        aria-live="polite">
+                                        —
+                                    </h3>
+
+                                    <small class="text-secondary">
+                                        Completed sales
+                                    </small>
+
+                                </div>
+
                             </div>
 
-                            <span class="badge text-bg-light">
-                                Owner Workspace
-                            </span>
+                        </div>
+
+                        <!-- NET SALES TODAY -->
+                        <div class="col-12 col-sm-6 col-xl-3">
+
+                            <div class="card h-100 owner-stat-card">
+
+                                <div class="card-body p-4">
+
+                                    <p class="text-secondary mb-2">
+                                        Net Sales Today
+                                    </p>
+
+                                    <h3
+                                        id="netSalesToday"
+                                        class="fw-bold mb-2"
+                                        aria-live="polite">
+                                        —
+                                    </h3>
+
+                                    <small class="text-secondary">
+                                        After recorded refunds
+                                    </small>
+
+                                </div>
+
+                            </div>
 
                         </div>
 
-                    </header>
+                        <!-- TOTAL STOCK -->
+                        <div class="col-12 col-sm-6 col-xl-3">
 
-                    <!-- DASHBOARD CONTENT -->
-                    <section class="dashboard-content p-4">
+                            <div class="card h-100 owner-stat-card">
 
-                        <h2 class="fw-bold">
-                            Store Overview
-                        </h2>
+                                <div class="card-body p-4">
 
-                        <p class="text-secondary">
-                            Sales, inventory, and store performance
-                            information will appear here.
-                        </p>
+                                    <p class="text-secondary mb-2">
+                                        Total Stock Units
+                                    </p>
 
-                        <div class="dashboard-placeholder p-5 mt-4">
+                                    <h3
+                                        id="totalStock"
+                                        class="fw-bold mb-2"
+                                        aria-live="polite">
+                                        —
+                                    </h3>
 
-                            <h5 class="fw-semibold">
-                                Owner Dashboard Layout Ready
-                            </h5>
+                                    <small class="text-secondary">
+                                        Current inventory quantity
+                                    </small>
 
-                            <p class="mb-0">
-                                Summary cards and financial information
-                                will be implemented in Step 9.3.
-                            </p>
+                                </div>
+
+                            </div>
 
                         </div>
 
-                    </section>
+                        <!-- LOW STOCK -->
+                        <div class="col-12 col-sm-6 col-xl-3">
 
-                </main>
+                            <div class="card h-100 owner-stat-card">
 
-            </div>
+                                <div class="card-body p-4">
+
+                                    <p class="text-secondary mb-2">
+                                        Low-Stock Products
+                                    </p>
+
+                                    <h3
+                                        id="ownerLowStock"
+                                        class="fw-bold mb-2"
+                                        aria-live="polite">
+                                        —
+                                    </h3>
+
+                                    <small class="text-secondary">
+                                        Products requiring attention
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- =====================================
+                         SALES PERFORMANCE AND INVENTORY
+                         ===================================== -->
+
+                    <div class="row g-4 mb-4">
+
+                        <!-- SALES TREND -->
+                        <div class="col-12 col-xl-8">
+
+                            <div class="card dashboard-content-card h-100">
+
+                                <div class="card-header bg-transparent p-4">
+
+                                    <div class="d-flex justify-content-between
+                                                align-items-center flex-wrap gap-2">
+
+                                        <h5 class="fw-bold mb-0">
+                                            Sales Performance
+                                        </h5>
+
+                                        <span class="badge text-bg-light">
+                                            Last 7 Days
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="card-body p-4">
+
+                                    <div
+                                        id="salesTrendChart"
+                                        class="d-flex align-items-center
+                                               justify-content-center
+                                               text-secondary"
+                                        style="min-height: 280px"
+                                        role="region"
+                                        aria-label="Sales performance chart">
+
+                                        Sales chart not loaded yet.
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- LOW STOCK ALERTS -->
+                        <div class="col-12 col-xl-4">
+
+                            <div class="card dashboard-content-card h-100">
+
+                                <div class="card-header bg-transparent p-4">
+
+                                    <h5 class="fw-bold mb-0">
+                                        Low-Stock Alerts
+                                    </h5>
+
+                                </div>
+
+                                <div class="card-body p-4">
+
+                                    <div
+                                        id="ownerInventoryAlerts"
+                                        class="text-secondary small mb-4"
+                                        aria-live="polite">
+
+                                        Inventory alerts not loaded yet.
+
+                                    </div>
+
+                                    <a
+                                        href="inventory/inventory.html"
+                                        class="btn btn-outline-secondary">
+                                        View Inventory
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- =====================================
+                         FINANCIAL OVERVIEW AND RECENT SALES
+                         ===================================== -->
+
+                    <div class="row g-4">
+
+                        <!-- FINANCIAL OVERVIEW -->
+                        <div class="col-12 col-xl-4">
+
+                            <div class="card dashboard-content-card h-100">
+
+                                <div class="card-header bg-transparent p-4">
+
+                                    <h5 class="fw-bold mb-0">
+                                        Financial Overview
+                                    </h5>
+
+                                </div>
+
+                                <div class="card-body p-4">
+
+                                    <div class="mb-4">
+
+                                        <p class="text-secondary mb-1">
+                                            Gross Profit Today
+                                        </p>
+
+                                        <h4
+                                            id="grossProfitToday"
+                                            class="fw-bold">
+                                            —
+                                        </h4>
+
+                                    </div>
+
+                                    <hr>
+
+                                    <div class="mb-4">
+
+                                        <p class="text-secondary mb-1">
+                                            Recorded Refunds Today
+                                        </p>
+
+                                        <h4
+                                            id="refundsToday"
+                                            class="fw-bold">
+                                            —
+                                        </h4>
+
+                                    </div>
+
+                                    <a
+                                        href="financial/financial.html"
+                                        class="btn btn-primary w-100">
+                                        Financial Analytics
+                                    </a>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- RECENT SALES -->
+                        <div class="col-12 col-xl-8">
+
+                            <div class="card dashboard-content-card h-100">
+
+                                <div class="card-header bg-transparent p-4">
+
+                                    <div class="d-flex justify-content-between
+                                                align-items-center flex-wrap gap-2">
+
+                                        <h5 class="fw-bold mb-0">
+                                            Recent Sales
+                                        </h5>
+
+                                        <a
+                                            href="sales/sales.html"
+                                            class="btn btn-primary btn-sm">
+                                            Open POS
+                                        </a>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="card-body p-4">
+
+                                    <div class="table-responsive">
+
+                                        <table class="table table-hover align-middle">
+
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th scope="col">Receipt</th>
+                                                    <th scope="col">Date</th>
+                                                    <th scope="col">Total</th>
+                                                    <th scope="col">Status</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody id="ownerRecentSales">
+
+                                                <tr>
+                                                    <td
+                                                        colspan="4"
+                                                        class="text-center
+                                                               text-secondary py-4">
+                                                        Sales data not loaded yet.
+                                                    </td>
+                                                </tr>
+
+                                            </tbody>
+
+                                        </table>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </main>
+
         </div>
+    </div>
 
-        <!-- Bootstrap JavaScript -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap 5 JavaScript -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    </script>
 
-        <!-- Session and Dashboard JavaScript -->
-        <script src="session.js"></script>
-        <script src="dashboard/dashboard.js"></script>
+    <!-- Existing Session Management -->
+    <script src="session.js"></script>
 
-    </body>
+    <!-- Shared Staff and Owner Dashboard JavaScript -->
+    <script src="dashboard/dashboard.js"></script>
+
+</body>
 </html>
-s
