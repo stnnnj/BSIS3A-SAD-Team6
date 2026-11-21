@@ -178,3 +178,578 @@ body {
         transition: none;
     }
 }
+
+
+/* ==========================================
+   CCMC RETAILFLOW – SHARED DASHBOARD COMPONENTS
+   Staff & Owner Dashboard
+   ========================================== */
+
+
+/* ==========================================
+   1. DASHBOARD SUMMARY CARDS
+   ========================================== */
+
+.staff-stat-card,
+.owner-stat-card,
+.dashboard-stat-card {
+    position: relative;
+    overflow: hidden;
+
+    background: rgba(255, 255, 255, 0.92);
+
+    border: 1px solid #E0E6EC;
+    border-radius: 16px;
+
+    box-shadow: 0 5px 18px rgba(11, 19, 32, 0.05);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+/* Gold-to-teal gradient accent */
+
+.staff-stat-card::before,
+.owner-stat-card::before,
+.dashboard-stat-card::before {
+    content: "";
+    position: absolute;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 4px;
+
+    background: linear-gradient(
+        90deg,
+        var(--gold),
+        var(--teal)
+    );
+
+    transform: scaleX(0);
+    transform-origin: left;
+
+    transition: transform 0.3s ease;
+    pointer-events: none;
+}
+
+/* Summary card hover animation */
+
+.staff-stat-card:hover,
+.owner-stat-card:hover,
+.dashboard-stat-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow: 0 12px 28px rgba(11, 19, 32, 0.12);
+
+    border-color: #C5D7E0;
+}
+
+.staff-stat-card:hover::before,
+.owner-stat-card:hover::before,
+.dashboard-stat-card:hover::before {
+    transform: scaleX(1);
+}
+
+/* Summary card typography */
+
+.staff-stat-card h3,
+.owner-stat-card h3,
+.dashboard-stat-card h3 {
+    color: var(--midnight);
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.staff-stat-card p,
+.owner-stat-card p,
+.dashboard-stat-card p {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+/* ==========================================
+   2. DASHBOARD CONTENT PANELS
+   ========================================== */
+
+.staff-content-card,
+.owner-content-card,
+.dashboard-content-card {
+    overflow: hidden;
+
+    background: rgba(255, 255, 255, 0.92);
+
+    border: 1px solid #E0E6EC;
+    border-radius: 18px;
+
+    box-shadow: 0 8px 24px rgba(11, 19, 32, 0.06);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.staff-content-card .card-header,
+.owner-content-card .card-header,
+.dashboard-content-card .card-header {
+    border-bottom: 1px solid #E0E6EC;
+}
+
+.staff-content-card h5,
+.staff-content-card h6,
+.owner-content-card h5,
+.owner-content-card h6,
+.dashboard-content-card h5,
+.dashboard-content-card h6 {
+    color: var(--midnight);
+}
+
+
+/* ==========================================
+   3. DASHBOARD TABLES
+   ========================================== */
+
+.dashboard-content .table {
+    --bs-table-bg: transparent;
+}
+
+.dashboard-content .table thead th {
+    color: var(--navy);
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+
+    padding: 14px 12px;
+}
+
+.dashboard-content .table tbody td {
+    padding: 16px 12px;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.dashboard-content .table-hover tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+
+/* ==========================================
+   4. DASHBOARD ALERTS
+   ========================================== */
+
+/* Warning alerts */
+
+.dashboard-content .alert-warning {
+    background: rgba(255, 183, 3, 0.10);
+
+    border: 1px solid rgba(255, 183, 3, 0.30);
+    border-left: 4px solid var(--gold);
+
+    color: #665012;
+    border-radius: 12px;
+}
+
+/* Success alerts */
+
+.dashboard-content .alert-success {
+    background: rgba(42, 157, 143, 0.10);
+
+    border: 1px solid rgba(42, 157, 143, 0.30);
+    border-left: 4px solid var(--teal);
+
+    color: #176358;
+    border-radius: 12px;
+}
+
+/* Information alerts */
+
+.dashboard-content .alert-info {
+    background: rgba(31, 58, 95, 0.08);
+
+    border: 1px solid rgba(31, 58, 95, 0.20);
+    border-left: 4px solid var(--navy);
+
+    color: var(--navy);
+    border-radius: 12px;
+}
+
+
+/* ==========================================
+   5. RESERVATION AND INVENTORY NOTICES
+   ========================================== */
+
+#reservationAlerts,
+#inventoryAlerts {
+    padding: 12px 14px;
+
+    background: rgba(31, 58, 95, 0.04);
+
+    border: 1px solid #E0E6EC;
+    border-radius: 10px;
+
+    line-height: 1.6;
+}
+
+
+/* ==========================================
+   6. DASHBOARD ENTRANCE ANIMATION
+   ========================================== */
+
+.dashboard-content {
+    animation: dashboardFadeIn 0.45s ease-out;
+}
+
+@keyframes dashboardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ==========================================
+   7. RESPONSIVE COMPONENTS
+   ========================================== */
+
+@media (max-width: 767.98px) {
+
+    .staff-stat-card h3,
+    .owner-stat-card h3,
+    .dashboard-stat-card h3 {
+        font-size: 28px;
+    }
+
+    .dashboard-content {
+        padding: 20px !important;
+    }
+
+    .dashboard-content .card-header {
+        gap: 12px;
+    }
+
+}
+
+
+/* ==========================================
+   8. ACCESSIBILITY
+   ========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .staff-stat-card,
+    .owner-stat-card,
+    .dashboard-stat-card,
+    .staff-stat-card::before,
+    .owner-stat-card::before,
+    .dashboard-stat-card::before {
+        transition: none;
+    }
+
+    .staff-stat-card:hover,
+    .owner-stat-card:hover,
+    .dashboard-stat-card:hover {
+        transform: none;
+    }
+
+    .dashboard-content {
+        animation: none;
+    }
+
+}
+
+
+/* ==========================================
+   CCMC RETAILFLOW – OWNER DASHBOARD
+   Additional Styling
+   ========================================== */
+
+
+/* ==========================================
+   1. OWNER DASHBOARD SUMMARY CARDS
+   ========================================== */
+
+body[data-role="Owner"] .owner-stat-card {
+    position: relative;
+    overflow: hidden;
+
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid #E0E6EC;
+    border-radius: 18px;
+
+    min-height: 160px;
+
+    box-shadow: 0 6px 22px rgba(11, 19, 32, 0.06);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+}
+
+body[data-role="Owner"] .owner-stat-card:hover {
+    transform: translateY(-5px);
+
+    box-shadow: 0 14px 32px rgba(11, 19, 32, 0.12);
+    border-color: #BED5D8;
+}
+
+/* Gold-to-teal top gradient */
+
+body[data-role="Owner"] .owner-stat-card::before {
+    content: "";
+    position: absolute;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 4px;
+
+    background: linear-gradient(
+        90deg,
+        var(--gold),
+        var(--teal)
+    );
+
+    transform: scaleX(0);
+    transform-origin: left;
+
+    transition: transform 0.35s ease;
+    pointer-events: none;
+}
+
+body[data-role="Owner"] .owner-stat-card:hover::before {
+    transform: scaleX(1);
+}
+
+body[data-role="Owner"] .owner-stat-card h3 {
+    color: var(--midnight);
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+body[data-role="Owner"] .owner-stat-card p {
+    color: #617083;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/* ==========================================
+   2. OWNER DASHBOARD CONTENT PANELS
+   ========================================== */
+
+body[data-role="Owner"] .dashboard-content-card {
+    background: rgba(255, 255, 255, 0.94);
+
+    border: 1px solid #E0E6EC;
+    border-radius: 18px;
+
+    box-shadow: 0 8px 25px rgba(11, 19, 32, 0.06);
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    transition:
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+body[data-role="Owner"] .dashboard-content-card:hover {
+    box-shadow: 0 12px 30px rgba(11, 19, 32, 0.09);
+    border-color: #D2DFE5;
+}
+
+body[data-role="Owner"] .dashboard-content-card .card-header {
+    border-bottom: 1px solid #E0E6EC;
+}
+
+body[data-role="Owner"] .dashboard-content-card h5 {
+    color: var(--midnight);
+    font-weight: 700;
+}
+
+
+/* ==========================================
+   3. SALES PERFORMANCE CHART CONTAINER
+   ========================================== */
+
+body[data-role="Owner"] #salesTrendChart {
+    position: relative;
+
+    width: 100%;
+    min-height: 280px;
+
+    padding: 15px;
+    border-radius: 14px;
+
+    background: linear-gradient(
+        135deg,
+        rgba(31, 58, 95, 0.035),
+        rgba(42, 157, 143, 0.045)
+    );
+
+    border: 1px solid rgba(31, 58, 95, 0.08);
+
+    transition: background 0.3s ease;
+}
+
+/* Chart canvas when JavaScript adds it */
+
+body[data-role="Owner"] #salesTrendChart canvas {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+}
+
+
+/* ==========================================
+   4. LOW-STOCK ALERTS
+   ========================================== */
+
+
+body[data-role="Owner"] #ownerInventoryAlerts {
+    padding: 15px;
+
+    background: rgba(255, 183, 3, 0.06);
+    border: 1px solid rgba(255, 183, 3, 0.18);
+    border-radius: 12px;
+
+    line-height: 1.7;
+}
+
+body[data-role="Owner"] #ownerInventoryAlerts ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+body[data-role="Owner"] #ownerInventoryAlerts li {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(31, 58, 95, 0.08);
+}
+
+body[data-role="Owner"] #ownerInventoryAlerts li:last-child {
+    border-bottom: none;
+}
+
+
+/* ==========================================
+   5. FINANCIAL OVERVIEW
+   ========================================== */
+
+body[data-role="Owner"] #grossProfitToday {
+    color: var(--teal);
+    font-size: 28px;
+    font-weight: 700;
+}
+
+body[data-role="Owner"] #refundsToday {
+    color: var(--navy);
+    font-size: 28px;
+    font-weight: 700;
+}
+
+body[data-role="Owner"] .dashboard-content-card hr {
+    border-color: #DCE3EA;
+    opacity: 0.8;
+}
+
+
+/* ==========================================
+   6. OWNER RECENT SALES TABLE
+   ========================================== */
+
+body[data-role="Owner"] #ownerRecentSales td {
+    padding: 16px 12px;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+body[data-role="Owner"] #ownerRecentSales tr {
+    transition: background-color 0.2s ease;
+}
+
+body[data-role="Owner"] #ownerRecentSales tr:hover {
+    background: rgba(42, 157, 143, 0.04);
+}
+
+
+/* ==========================================
+   7. OWNER DASHBOARD ENTRANCE ANIMATION
+   ========================================== */
+
+body[data-role="Owner"] .dashboard-content {
+    animation: ownerDashboardEnter 0.5s ease-out;
+}
+
+@keyframes ownerDashboardEnter {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* ==========================================
+   8. OWNER DASHBOARD RESPONSIVENESS
+   ========================================== */
+
+@media (max-width: 767.98px) {
+
+    body[data-role="Owner"] .owner-stat-card {
+        min-height: 140px;
+    }
+
+    body[data-role="Owner"] .owner-stat-card h3 {
+        font-size: 26px;
+    }
+
+    body[data-role="Owner"] #salesTrendChart {
+        min-height: 220px;
+        padding: 10px;
+    }
+
+    body[data-role="Owner"] #grossProfitToday,
+    body[data-role="Owner"] #refundsToday {
+        font-size: 24px;
+    }
+}
+
+
+/* ==========================================
+   9. ACCESSIBILITY
+   ========================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    body[data-role="Owner"] .owner-stat-card,
+    body[data-role="Owner"] .owner-stat-card::before,
+    body[data-role="Owner"] .dashboard-content-card,
+    body[data-role="Owner"] #salesTrendChart,
+    body[data-role="Owner"] #ownerRecentSales tr {
+        transition: none;
+    }
+
+    body[data-role="Owner"] .owner-stat-card:hover {
+        transform: none;
+    }
+
+    body[data-role="Owner"] .dashboard-content {
+        animation: none;
+    }
+}
