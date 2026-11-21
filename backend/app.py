@@ -29,6 +29,12 @@ load_dotenv(BASE_DIR / ".env")
 
 app = Flask(__name__)
 
+from financial import financial_bp
+from returns import returns_bp
+
+app.register_blueprint(financial_bp)
+app.register_blueprint(returns_bp)
+
 secret_key = os.getenv("FLASK_SECRET_KEY")
 
 if not secret_key or len(secret_key) < 32:
