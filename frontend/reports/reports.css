@@ -1,0 +1,360 @@
+/* CCMC RetailFlow — owner module theme lock.
+   This file owns THIS module's presentation; the existing dashboard and
+   buttons stylesheets provide the original palette and global effects. */
+:root {
+  --rf-ink: #0b1320;
+  --rf-navy: #1f3a5f;
+  --rf-teal: #2a9d8f;
+  --rf-gold: #ffb703;
+  --rf-muted: #6c7c8d;
+  --rf-line: #e4ebef;
+}
+
+.rf-content {
+  max-width: 1580px;
+  margin: 0 auto;
+  padding-bottom: 56px !important;
+}
+.rf-heading {
+  margin: 8px 0 22px;
+}
+.rf-eyebrow {
+  color: #288b7e;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+}
+.rf-heading h2 {
+  font-size: clamp(26px, 2.2vw, 34px);
+}
+.rf-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(225, 233, 239, 0.9);
+  border-radius: 18px;
+  box-shadow: 0 10px 35px rgba(11, 19, 32, 0.055);
+  overflow: hidden;
+  animation: rf-enter 0.44s both;
+}
+.rf-stat {
+  min-height: 152px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 22px 24px;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+.rf-stat:hover {
+  transform: translateY(-4px);
+  border-color: rgba(42, 157, 143, 0.3);
+  box-shadow: 0 16px 30px rgba(11, 19, 32, 0.1);
+}
+.rf-stat-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #657486;
+}
+.rf-stat-number {
+  font-size: 31px;
+  color: var(--rf-ink);
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+}
+.rf-stat-note {
+  font-size: 12px;
+  color: #8795a3;
+}
+.rf-card-heading {
+  padding: 21px 23px 13px;
+}
+.rf-card-heading h3 {
+  font-size: 18px;
+  font-weight: 750;
+  color: var(--rf-ink);
+  margin: 0;
+}
+.rf-card-heading p {
+  color: #7a8896;
+  font-size: 13px;
+  margin: 5px 0 0;
+}
+.rf-count {
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #e6f6f3;
+  color: #217769;
+  padding: 7px 12px;
+  white-space: nowrap;
+}
+.rf-table-wrap {
+  border-top: 1px solid var(--rf-line);
+}
+.rf-table-wrap .table thead th {
+  font-size: 12px;
+  color: #58697b;
+  letter-spacing: 0.025em;
+  font-weight: 700;
+  background: #f4f7f9;
+  border-bottom: 0;
+  padding: 15px 17px;
+  white-space: nowrap;
+}
+.rf-table-wrap .table td {
+  padding: 14px 17px;
+  border-color: #eef1f4;
+  font-size: 13px;
+  color: #263448;
+}
+.rf-table-wrap .table tr:hover td {
+  background: #f4faf9;
+  transition: background 0.2s ease;
+}
+.rf-empty {
+  text-align: center;
+  color: #83909e !important;
+  padding: 32px !important;
+}
+.rf-notice:empty {
+  display: none;
+}
+.rf-notice .alert {
+  border-radius: 12px;
+  padding: 13px 17px;
+}
+.rf-filters {
+  padding: 4px 23px 21px;
+}
+.rf-filters label,
+.rf-filter-panel label {
+  font-size: 12px;
+  color: #647385;
+  font-weight: 700;
+}
+.rf-help {
+  font-size: 12px;
+  color: #7a899a;
+}
+.rf-card .form-control,
+.rf-card .form-select,
+.rf-modal .form-control,
+.rf-modal .form-select {
+  border-radius: 10px;
+  border-color: #d9e1e8;
+  min-height: 44px;
+}
+.rf-card .form-control:focus,
+.rf-card .form-select:focus,
+.rf-modal .form-control:focus,
+.rf-modal .form-select:focus {
+  border-color: var(--rf-teal);
+  box-shadow: 0 0 0 3px rgba(42, 157, 143, 0.13);
+}
+.rf-modal {
+  border-radius: 18px;
+  border: 0;
+  overflow: hidden;
+}
+.rf-modal .modal-header,
+.rf-modal .modal-footer {
+  border-color: #e9edef;
+}
+.rf-modal .modal-body {
+  padding: 22px 26px;
+}
+.rf-modal .modal-header,
+.rf-modal .modal-footer {
+  padding: 17px 26px;
+}
+.rf-modal label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #57697c;
+}
+.rf-pill {
+  display: inline-block;
+  border-radius: 99px;
+  padding: 6px 11px;
+  font-size: 11px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+.rf-pill.ok {
+  background: #e8f6ef;
+  color: #13774b;
+}
+.rf-pill.low {
+  background: #fff4db;
+  color: #9b6510;
+}
+.rf-pill.out {
+  background: #fceced;
+  color: #ad3345;
+}
+.rf-pill.in {
+  background: #e5f7f3;
+  color: #1f8376;
+}
+.rf-pill.outgoing {
+  background: #fceceb;
+  color: #a94a43;
+}
+.rf-pill.neutral {
+  background: #edf1f6;
+  color: #4a6177;
+}
+.rf-item-name {
+  font-weight: 700;
+  color: #1e2c3e;
+}
+.rf-item-sub {
+  font-size: 11px;
+  color: #8593a1;
+  margin-top: 2px;
+}
+.rf-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: #536b85;
+}
+.rf-num {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+@keyframes rf-enter {
+  from {
+    opacity: 0;
+    transform: translateY(11px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 767.98px) {
+  .rf-sidebar {
+    position: relative;
+    min-height: auto;
+    height: auto;
+  }
+  .rf-sidebar nav {
+    max-height: 270px;
+    overflow: auto;
+  }
+  .rf-stat {
+    min-height: 130px;
+  }
+  .rf-heading {
+    margin-top: 0;
+  }
+  .rf-content {
+    padding: 20px !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rf-card {
+    animation: none;
+  }
+  .rf-stat,
+  .rf-table-wrap .table tr:hover td {
+    transition: none;
+  }
+  .rf-stat:hover {
+    transform: none;
+  }
+}
+
+/* Reports-specific filter, export, and chart layout */
+.rf-filter-panel {
+  padding: 23px;
+}
+.rf-filter-panel .row {
+  margin-bottom: 0;
+}
+.rf-table-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 6px 23px 20px;
+  flex-wrap: wrap;
+}
+.rf-table-tools input {
+  max-width: 350px;
+}
+.rf-chart {
+  display: flex;
+  align-items: end;
+  gap: 13px;
+  padding: 12px 25px 24px;
+  min-height: 185px;
+  overflow-x: auto;
+}
+.rf-bar-slot {
+  min-width: 40px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: end;
+  gap: 6px;
+  min-height: 142px;
+}
+.rf-bar-amount {
+  font-size: 11px;
+  color: #52677c;
+  font-weight: 700;
+}
+.rf-bar {
+  width: min(64px, 92%);
+  min-height: 5px;
+  border-radius: 9px 9px 3px 3px;
+  background: linear-gradient(0deg, #1f3a5f, #2a9d8f);
+  transform-origin: bottom;
+  animation: rf-grow 0.55s ease backwards;
+}
+.rf-bar-date {
+  font-size: 10px;
+  color: #718497;
+  white-space: nowrap;
+}
+.rf-chart-empty {
+  margin: auto;
+  color: #8998a5;
+  font-size: 13px;
+}
+@keyframes rf-grow {
+  from {
+    transform: scaleY(0.05);
+    opacity: 0.3;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rf-bar {
+    animation: none;
+  }
+}
+
+/* KEEP ORIGINAL OWNER DASHBOARD SIDEBAR */
+
+@media (min-width: 992px) {
+  .dashboard-sidebar {
+    flex: 0 0 auto;
+    width: 16.666667%;
+    min-width: 0;
+  }
+}
+
+.dashboard-sidebar .nav-link {
+  font-size: 16px;
+  text-decoration: none;
+}
+
+.dashboard-sidebar .nav-link:hover {
+  text-decoration: none;
+}

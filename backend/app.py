@@ -43,6 +43,13 @@ app.register_blueprint(owner_dashboard_bp)
 from users import users_bp
 app.register_blueprint(users_bp)
 
+from inventory import inventory_bp
+from reports import reports_bp
+
+app.register_blueprint(inventory_bp)
+app.register_blueprint(reports_bp)
+
+
 secret_key = os.getenv("FLASK_SECRET_KEY")
 
 if not secret_key or len(secret_key) < 32:
