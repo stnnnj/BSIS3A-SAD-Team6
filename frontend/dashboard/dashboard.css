@@ -1,0 +1,180 @@
+
+/* ==========================================
+   CCMC RETAILFLOW – DASHBOARD LAYOUT
+   Bootstrap 5 Custom Styling
+   ========================================== */
+
+:root {
+    --midnight: #0B1320;
+    --navy: #1F3A5F;
+    --off-white: #F7F5F2;
+    --gold: #FFB703;
+    --teal: #2A9D8F;
+}
+
+/* MAIN BACKGROUND */
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--off-white);
+}
+
+/* SIDEBAR */
+
+.dashboard-sidebar {
+    background: linear-gradient(
+        160deg,
+        var(--midnight),
+        var(--navy)
+    );
+
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-subtitle {
+    color: #AABACB;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+/* SIDEBAR NAVIGATION */
+
+.dashboard-sidebar .nav-link {
+    color: #DCE6EF;
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-weight: 500;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.dashboard-sidebar .nav-link:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateX(4px);
+}
+
+.dashboard-sidebar .nav-link.active {
+    color: white;
+    background: rgba(255, 255, 255, 0.16);
+    border-left: 3px solid var(--teal);
+}
+
+/* SIDEBAR FOOTER */
+
+.sidebar-footer {
+    margin-top: auto !important;
+    padding-top: 24px;
+}
+
+/* MAIN DASHBOARD */
+
+.dashboard-main {
+    background: linear-gradient(
+        135deg,
+        #F7F5F2,
+        #EDF1F4
+    );
+    min-height: 100vh;
+}
+
+/* HEADER */
+
+.dashboard-header {
+    background: rgba(255, 255, 255, 0.85);
+
+    border-bottom: 1px solid #DCE3EA;
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+/* CONTENT */
+
+.dashboard-content h2 {
+    color: var(--midnight);
+}
+
+/* PLACEHOLDER */
+
+.dashboard-placeholder {
+    background: rgba(255, 255, 255, 0.82);
+
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    border-radius: 18px;
+
+    box-shadow: 0 10px 35px rgba(11, 19, 32, 0.07);
+
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 767.98px) {
+
+    .dashboard-sidebar {
+        min-height: auto;
+    }
+
+    .dashboard-header .d-flex {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dashboard-sidebar .nav-link {
+        transition: none;
+    }
+
+    .dashboard-sidebar .nav-link:hover {
+        transform: none;
+    }
+}
+
+/* ==========================================
+   SIDEBAR NAVIGATION GRADIENT EFFECT
+   ========================================== */
+
+.dashboard-sidebar .nav-link {
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-sidebar .nav-link::after {
+    content: "";
+    position: absolute;
+
+    bottom: 0;
+    left: 50%;
+
+    width: 0;
+    height: 3px;
+
+    background: linear-gradient(
+        90deg,
+        #FFB703,
+        #2A9D8F
+    );
+
+    transform: translateX(-50%);
+    transition: width 0.3s ease;
+    pointer-events: none;
+}
+
+.dashboard-sidebar .nav-link:hover::after,
+.dashboard-sidebar .nav-link:focus-visible::after {
+    width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dashboard-sidebar .nav-link::after {
+        transition: none;
+    }
+}

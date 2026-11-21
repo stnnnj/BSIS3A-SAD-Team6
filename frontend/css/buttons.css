@@ -1,0 +1,218 @@
+
+/* ==========================================
+   CCMC RETAILFLOW – GLOBAL BUTTON DESIGN
+   Bootstrap 5 + Gradient Hover Animation
+   ========================================== */
+
+:root {
+    --ccmc-midnight: #0B1320;
+    --ccmc-navy: #1F3A5F;
+    --ccmc-gold: #FFB703;
+    --ccmc-teal: #2A9D8F;
+}
+
+/* ALL BOOTSTRAP BUTTONS */
+
+.btn {
+    position: relative;
+    overflow: hidden;
+
+    border-radius: 12px;
+    padding: 11px 20px;
+
+    font-weight: 600;
+    letter-spacing: 0.2px;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.btn:not(:disabled):not(.disabled):hover {
+    transform: translateY(-2px);
+}
+
+/* GOLD-TO-TEAL GRADIENT UNDERLINE */
+
+.btn::after {
+    content: "";
+    position: absolute;
+
+    bottom: 0;
+    left: 50%;
+
+    width: 0;
+    height: 4px;
+
+    background: linear-gradient(
+        90deg,
+        var(--ccmc-gold),
+        var(--ccmc-teal)
+    );
+
+    transform: translateX(-50%);
+    border-radius: 4px 4px 0 0;
+
+    transition: width 0.3s ease;
+    pointer-events: none;
+}
+
+/* Show gradient underline on hover or keyboard focus */
+
+.btn:not(:disabled):not(.disabled):hover::after,
+.btn:focus-visible::after {
+    width: 100%;
+}
+
+/* PRIMARY BUTTON */
+
+.btn-primary {
+    background: linear-gradient(
+        135deg,
+        var(--ccmc-midnight),
+        var(--ccmc-navy)
+    );
+
+    border-color: var(--ccmc-navy);
+    color: #FFFFFF;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(
+        135deg,
+        var(--ccmc-navy),
+        #315A82
+    );
+
+    border-color: #315A82;
+    color: #FFFFFF;
+
+    box-shadow: 0 8px 22px rgba(31, 58, 95, 0.25);
+}
+
+/* SUCCESS BUTTON */
+
+.btn-success {
+    background: linear-gradient(
+        135deg,
+        var(--ccmc-navy),
+        var(--ccmc-teal)
+    );
+
+    border-color: var(--ccmc-teal);
+    color: #FFFFFF;
+}
+
+.btn-success:hover {
+    background: linear-gradient(
+        135deg,
+        #245878,
+        #23887D
+    );
+
+    border-color: #23887D;
+    color: #FFFFFF;
+}
+
+/* WARNING BUTTON */
+
+.btn-warning {
+    background: linear-gradient(
+        135deg,
+        var(--ccmc-navy),
+        var(--ccmc-gold)
+    );
+
+    border-color: #D99B00;
+    color: #FFFFFF;
+}
+
+.btn-warning:hover {
+    background: linear-gradient(
+        135deg,
+        #294F73,
+        #E6A600
+    );
+
+    border-color: #D99B00;
+    color: #FFFFFF;
+}
+
+/* DANGER BUTTON */
+
+.btn-danger {
+    background: linear-gradient(
+        135deg,
+        #8C2832,
+        #C44750
+    );
+
+    border-color: #A73540;
+    color: #FFFFFF;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(
+        135deg,
+        #A73540,
+        #D45660
+    );
+
+    border-color: #A73540;
+    color: #FFFFFF;
+}
+
+/* SECONDARY AND OUTLINE BUTTONS */
+
+.btn-secondary,
+.btn-outline-secondary,
+.btn-outline-light {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* FOCUS INDICATOR */
+
+.btn:focus-visible {
+    outline: 3px solid var(--ccmc-gold);
+    outline-offset: 3px;
+}
+
+/* DISABLED BUTTONS */
+
+.btn:disabled,
+.btn.disabled {
+    opacity: 0.55;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn:disabled::after,
+.btn.disabled::after {
+    width: 0;
+}
+
+/* BOOTSTRAP BUTTON SIZES */
+
+.btn-sm {
+    padding: 7px 14px;
+    border-radius: 9px;
+}
+
+.btn-lg {
+    padding: 14px 24px;
+    border-radius: 14px;
+}
+
+/* ACCESSIBILITY */
+
+@media (prefers-reduced-motion: reduce) {
+    .btn,
+    .btn::after {
+        transition: none;
+    }
+
+    .btn:not(:disabled):not(.disabled):hover {
+        transform: none;
+    }
+}
