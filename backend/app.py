@@ -312,6 +312,12 @@ def owner_test():
         "message": "Owner access granted."
     })
 
+from sales import sales_bp
+from reservations import reservations_bp
+
+app.register_blueprint(sales_bp)
+app.register_blueprint(reservations_bp)
+
 
 # ==========================================
 # RUN FLASK APPLICATION
