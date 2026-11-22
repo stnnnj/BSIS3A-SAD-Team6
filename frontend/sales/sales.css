@@ -100,3 +100,138 @@ body { font-family: "Segoe UI", Arial, sans-serif; background: var(--off-white);
   }
   #receiptPrintRoot .rf-receipt-divider { border-color: black !important; }
 }
+
+
+/* Dedicated in-page payment confirmation, replacing the browser's OK/Cancel alert. */
+body.rf-payment-modal-open { overflow: hidden; }
+.rf-payment-modal {
+  position: fixed; inset: 0; z-index: 2050; padding: 18px;
+  display: flex; align-items: center; justify-content: center;
+}
+.rf-payment-modal-backdrop { position: absolute; inset: 0; background: rgba(11, 19, 32, .62); backdrop-filter: blur(3px); }
+.rf-payment-dialog {
+  position: relative; z-index: 1; width: min(100%, 515px); max-height: min(92vh, 850px);
+  overflow-y: auto; border-radius: 18px; background: white; color: var(--text);
+  box-shadow: 0 26px 80px rgba(4, 20, 38, .32); border: 1px solid #dfe8ec;
+  outline: none;
+}
+.rf-payment-dialog-head {
+  display: flex; align-items: flex-start; gap: 13px; position: relative;
+  padding: 26px 28px 21px; background: #f5faf9; border-bottom: 1px solid #e0edea;
+}
+.rf-payment-heading { min-width: 0; flex: 1; padding-right: 13px; }
+.rf-payment-eyebrow { color: #177967; font-size: 10px; font-weight: 800; letter-spacing: .12em; margin-bottom: 5px; }
+.rf-payment-heading h2 { font-size: 20px; letter-spacing: -.025em; font-weight: 800; margin: 0 0 5px; color: #14243c; }
+.rf-payment-heading p { font-size: 12.5px; color: #5d7181; line-height: 1.5; margin: 0; }
+.rf-payment-dismiss { position: absolute; top: 13px; right: 14px; border: none; background: transparent; color: #6a7884; border-radius: 8px; line-height: 1; font-size: 25px; width: 32px; height: 32px; }
+.rf-payment-dismiss:hover { background: #e7edee; color: #162b3d; }
+.rf-payment-dialog-body { padding: 20px 28px 8px; }
+.rf-confirm-items-head, .rf-confirm-item, .rf-confirm-line, .rf-confirm-method-top { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; }
+.rf-confirm-items-head { font-size: 12px; font-weight: 800; color: #3f5060; margin-bottom: 10px; }
+.rf-confirm-items-head span:last-child { font-size: 11px; font-weight: 600; color: #7a8995; }
+.rf-confirm-items { display: grid; gap: 9px; margin-bottom: 15px; }
+.rf-confirm-item { font-size: 13px; color: #243849; }
+.rf-confirm-item small { color: #748695; margin-left: 4px; }
+.rf-confirm-item strong,.rf-confirm-line strong { font-weight: 700; font-variant-numeric: tabular-nums; }
+.rf-confirm-breakdown { border-top: 1px solid #edf1f3; padding-top: 13px; display: grid; gap: 8px; }
+.rf-confirm-line { color: #657382; font-size: 12px; }
+.rf-confirm-line strong { color: #27374a; text-align: right; overflow-wrap: anywhere; max-width: 67%; }
+.rf-confirm-payable { margin: 17px 0 16px; padding: 16px 17px; border-radius: 12px; background: #1c3456; color: white; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.rf-confirm-payable span { font-size: 12px; font-weight: 600; opacity: .89; }
+.rf-confirm-payable strong { font-size: 23px; letter-spacing: -.025em; font-weight: 800; font-variant-numeric: tabular-nums; }
+.rf-confirm-method { padding: 14px 15px; border-radius: 11px; background: #f7f9fb; border: 1px solid #e5ebf0; display: grid; gap: 8px; }
+.rf-confirm-method-top { font-size: 12px; color: #667989; }
+.rf-confirm-method-top strong { color: #167767; background: #e7f4f0; font-size: 11px; border-radius: 99px; padding: 3px 9px; }
+.rf-confirm-verify { display: flex; gap: 11px; margin-top: 15px; border: 1px solid #d1e5df; border-radius: 12px; background: #f1faf7; padding: 13px 14px; cursor: pointer; color: #274c43; font-weight: 700; line-height: 1.45; font-size: 12.5px; }
+.rf-confirm-verify input { width: 17px; height: 17px; flex: 0 0 17px; margin-top: 1px; accent-color: #158271; cursor: pointer; }
+.rf-confirm-note { margin: 10px 0 14px; font-size: 11px; line-height: 1.55; color: #788795; }
+.rf-confirm-error { border-radius: 9px; margin: 0 0 12px; padding: 10px 12px; border: 1px solid #f2c2c8; color: #963341; background: #fff1f3; font-size: 12px; }
+.rf-payment-dialog-actions { padding: 16px 28px 23px; border-top: 1px solid #eef1f4; display: flex; justify-content: flex-end; gap: 10px; }
+.rf-payment-dialog-actions .btn { min-height: 43px; border-radius: 10px; padding-inline: 20px; font-size: 13px; font-weight: 700; }
+.rf-confirm-finish { min-width: 168px; background: #16826e; border-color: #16826e; }
+.rf-confirm-finish:hover,.rf-confirm-finish:focus { background: #106f5f; border-color: #106f5f; }
+.rf-confirm-finish:disabled { background: #a0bdba; border-color: #a0bdba; color: #fff; opacity: 1; cursor: not-allowed; }
+@media (max-width: 560px) {
+  .rf-payment-modal { padding: 12px; align-items: center; }
+  .rf-payment-dialog-head { padding: 23px 17px 19px; }
+  .rf-payment-dialog-body { padding: 17px 17px 5px; }
+  .rf-payment-dialog-actions { padding: 13px 17px 18px; }
+  .rf-payment-dialog-actions .btn { flex: 1; min-width: 0; padding-inline: 8px; }
+  .rf-confirm-payable strong { font-size: 19px; }
+  .rf-payment-heading h2 { font-size: 18px; }
+}
+@media print { .rf-payment-modal { display: none !important; } }
+
+/* Receipt screen only: keep the action card content-height instead of stretching to the receipt. */
+#saleReceiptStep .rf-receipt-layout { align-items: start; }
+#saleReceiptStep .rf-receipt-actions-card {
+  align-self: start;
+  height: fit-content;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 19px;
+  padding: 26px 27px 27px;
+}
+#saleReceiptStep .rf-receipt-actions-card h3 {
+  margin: 0;
+  font-size: 1.35rem;
+  line-height: 1.25;
+}
+#saleReceiptStep .rf-receipt-success {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid #cbeeda;
+  background: #e9faef;
+  border-radius: 10px;
+  color: #146c32;
+  font-size: .97rem;
+  font-weight: 650;
+  line-height: 1.4;
+}
+#saleReceiptStep .rf-receipt-success-icon {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 27px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: #25964a;
+  color: white;
+  font-size: 17px;
+  font-weight: 800;
+}
+#saleReceiptStep .rf-receipt-controls { gap: 10px; }
+#saleReceiptStep .rf-receipt-controls .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 17px;
+  border-radius: 10px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+#saleReceiptStep .rf-receipt-controls .btn svg { flex: none; }
+#saleReceiptStep .rf-receipt-controls #printReceiptBtn {
+  background: #fff;
+  border: 1px solid #8795a3;
+  color: #405164;
+}
+#saleReceiptStep .rf-receipt-controls #receiptNewSaleBtn {
+  background: #1f3a5f;
+  border: 1px solid #1f3a5f;
+  color: #fff;
+}
+#saleReceiptStep .rf-receipt-controls #receiptNewSaleBtn:hover {
+  background: #152d4d;
+  border-color: #152d4d;
+}
+@media (max-width: 420px) {
+  #saleReceiptStep .rf-receipt-actions-card { padding: 21px 17px; }
+  #saleReceiptStep .rf-receipt-controls .btn { flex: 1 1 135px; }
+}

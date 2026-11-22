@@ -146,9 +146,115 @@ function validateDiscount(){const t=$('discountType').value;
     if(!$('discountId').value.trim()||!$('customerName').value.trim())throw Error('Customer name and verified Senior/PWD ID are required.');
   }
 }
-async function checkout(){try{validateDiscount();const method=paymentMethod();if(method==='Cash'&&num($('cashReceived').value)<due())throw Error('Cash received must cover the amount due.');if(method==='GCash'&&!$('gcashReference').value.trim())throw Error('Enter the verified GCash transaction reference.');if(!confirm('Confirm you have received the payment and complete this sale?'))return;
-$('confirmPaymentBtn').disabled=true;const data=await api('/sales/checkout',{method:'POST',body:JSON.stringify({draft_id:state.draftId,items:items(),customer_name:$('customerName').value.trim(),discount_type:$('discountType').value,discount_id_no:$('discountId').value.trim(),payment_method:method,cash_received:method==='Cash'?num($('cashReceived').value):null,gcash_reference:method==='GCash'?$('gcashReference').value.trim():null})});renderReceipt(data.sale,{method,cash:method==='Cash'?num($('cashReceived').value):null,change:method==='Cash'?num(num($('cashReceived').value)-Number(data.sale.total_amount)):null});showStep(3);toast('Sale completed and stock deducted.');}
-catch(e){toast(e.message,'error')}finally{$('confirmPaymentBtn').disabled=false}}
+// Payment is recorded only after an explicit confirmation inside the POS.
+// The GCash option represents a manually verified transfer, not an online charge.
+let checkoutInProgress=false;
+let paymentReturnFocus=null;
+function validateCheckoutInputs(){
+  if(!state.cart.length)throw Error('Add a product before completing the sale.');
+  validateDiscount();
+  const method=paymentMethod();
+  if(method==='Cash'){
+    const cash=Number($('cashReceived').value);
+    if(!Number.isFinite(cash)||cash<due())throw Error('Cash received must cover the amount due.');
+  }else if(method==='GCash'&&!$('gcashReference').value.trim()){
+    throw Error('Enter the independently verified GCash transaction reference.');
+  }
+  return method;
+}
+function updatePaymentConfirmationAction(){
+  $('paymentConfirmFinish').disabled=checkoutInProgress||!$('paymentVerified').checked;
+}
+function closePaymentConfirmation(){
+  if(checkoutInProgress)return;
+  $('paymentConfirmModal').classList.add('rf-hidden');
+  $('paymentConfirmModal').setAttribute('aria-hidden','true');
+  document.body.classList.remove('rf-payment-modal-open');
+  if(paymentReturnFocus?.isConnected)paymentReturnFocus.focus();
+  paymentReturnFocus=null;
+}
+function openPaymentConfirmation(){
+  if(checkoutInProgress)return;
+  let method;
+  try{method=validateCheckoutInputs()}catch(e){toast(e.message,'error');return;}
+  paymentReturnFocus=document.activeElement;
+  $('paymentConfirmItems').innerHTML=state.cart.map(item=>
+    `<div class="rf-confirm-item"><span>${esc(item.name)} <small>× ${item.qty}</small></span><strong>${money(item.price*item.qty)}</strong></div>`).join('');
+  const qty=state.cart.reduce((count,item)=>count+item.qty,0);
+  $('paymentConfirmQty').textContent=qty===1?'1 item':`${qty} items`;
+  $('paymentConfirmSubtotal').textContent=money(total());
+  $('paymentConfirmDiscount').textContent='−'+money(discount());
+  $('paymentConfirmTotal').textContent=money(due());
+  $('paymentConfirmMethod').textContent=method;
+  const cash=method==='Cash';
+  $('paymentConfirmTenderLabel').textContent=cash?'Cash received':'GCash reference (manually checked)';
+  $('paymentConfirmTender').textContent=cash?money(Number($('cashReceived').value)):$('gcashReference').value.trim();
+  $('paymentConfirmChangeRow').classList.toggle('rf-hidden',!cash);
+  $('paymentConfirmChange').textContent=cash?money(num(Number($('cashReceived').value)-due())):'';
+  $('paymentVerifyLabel').textContent=cash
+    ? 'I have counted and received this cash payment.'
+    : 'I have independently verified that the GCash payment was received.';
+  $('paymentVerified').checked=false;
+  $('paymentConfirmError').hidden=true;
+  $('paymentConfirmError').textContent='';
+  updatePaymentConfirmationAction();
+  $('paymentConfirmModal').classList.remove('rf-hidden');
+  $('paymentConfirmModal').setAttribute('aria-hidden','false');
+  document.body.classList.add('rf-payment-modal-open');
+  $('paymentVerified').focus();
+}
+function handlePaymentModalKeys(event){
+  if($('paymentConfirmModal').classList.contains('rf-hidden'))return;
+  if(event.key==='Escape'){
+    event.preventDefault();
+    if(!checkoutInProgress)closePaymentConfirmation();
+  }
+  if(event.key==='Tab'){
+    const dialog=$('paymentConfirmModal');
+    const controls=[...dialog.querySelectorAll('button:not([disabled]),input:not([disabled])')]
+      .filter(el=>el.getClientRects().length);
+    if(!controls.length)return;
+    const first=controls[0],last=controls[controls.length-1];
+    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+  }
+}
+async function checkout(){
+  if(checkoutInProgress||$('paymentConfirmModal').classList.contains('rf-hidden')||!$('paymentVerified').checked)return;
+  let method;
+  try{method=validateCheckoutInputs()}catch(e){$('paymentConfirmError').textContent=e.message;$('paymentConfirmError').hidden=false;return;}
+  checkoutInProgress=true;
+  $('confirmPaymentBtn').disabled=true;
+  $('paymentConfirmFinish').disabled=true;
+  $('paymentConfirmFinish').textContent='Processing sale…';
+  $('paymentConfirmCancel').disabled=true;
+  $('paymentConfirmClose').disabled=true;
+  $('paymentConfirmError').hidden=true;
+  try{
+    const paidCash=method==='Cash'?num($('cashReceived').value):null;
+    const data=await api('/sales/checkout',{method:'POST',body:JSON.stringify({
+      draft_id:state.draftId,items:items(),customer_name:$('customerName').value.trim(),
+      discount_type:$('discountType').value,discount_id_no:$('discountId').value.trim(),
+      payment_method:method,cash_received:paidCash,
+      gcash_reference:method==='GCash'?$('gcashReference').value.trim():null
+    })});
+    renderReceipt(data.sale,{method,cash:paidCash,change:method==='Cash'?num(paidCash-Number(data.sale.total_amount)):null});
+    checkoutInProgress=false;
+    closePaymentConfirmation();
+    showStep(3);
+    toast('Payment recorded. Sale completed and stock deducted.');
+  }catch(e){
+    $('paymentConfirmError').textContent=e.message;
+    $('paymentConfirmError').hidden=false;
+  }finally{
+    checkoutInProgress=false;
+    $('confirmPaymentBtn').disabled=false;
+    $('paymentConfirmFinish').textContent='Complete sale';
+    $('paymentConfirmCancel').disabled=false;
+    $('paymentConfirmClose').disabled=false;
+    updatePaymentConfirmationAction();
+  }
+}
 // These merchant details are intentionally not invented. Add your real branch,
 // address and contact details here if your store has supplied them.
 const RECEIPT_STORE = {
@@ -236,6 +342,10 @@ function renderHistory(){const q=$('historySearch').value.toLowerCase();const sa
 async function openSale(id,mode){try{const d=await api('/sales/'+id);if(mode==='receipt'){renderReceipt(d.sale);showStep(3);return;}state.cart=d.sale.items.map(i=>({id:i.product_id,code:i.item_code,name:i.product_name,qty:i.quantity,price:num(i.unit_price),available:Math.max(i.quantity,Number(i.available_qty||0))}));state.draftId=d.sale.sale_id;$('discountType').value=d.sale.discount_type||'None';$('customerName').value=d.sale.customer_name||'';$('discountId').value=d.sale.discount_id_no||'';renderCart();showStep(0)}catch(e){toast(e.message,'error')}}
 document.addEventListener('DOMContentLoaded',async()=>{ModuleShared.commonNav('sales');try{await ModuleShared.session()}catch{return} $('productRows').addEventListener('click',e=>{const retry=e.target.closest('[data-retry-products]');if(retry){loadProducts();return;}const b=e.target.closest('[data-add]');if(!b||b.disabled)return;addProduct(b.dataset.add)});
 $('cartItems').addEventListener('click',e=>{const b=e.target.closest('[data-qty],[data-remove]');if(!b)return;const index=Number(b.dataset.qty??b.dataset.remove);if(b.dataset.remove!==undefined)state.cart.splice(index,1);else{const i=state.cart[index];const q=i.qty+Number(b.dataset.change);if(q>i.available)return toast('Not enough available stock.','error');if(q<1)state.cart.splice(index,1);else i.qty=q}renderCart()});
-$('searchProductsBtn').onclick=loadProducts;$('productSearch').addEventListener('keydown',e=>{if(e.key==='Enter')loadProducts()});$('saveDraftBtn').onclick=saveDraft;$('voidDraftBtn').onclick=voidDraft;$('toDiscountBtn').onclick=()=>{if(!state.cart.length)return toast('Add items to the cart first.','error');renderDiscount();showStep(1)};$('backToCartBtn').onclick=()=>showStep(0);$('discountType').onchange=renderDiscount;$('toPaymentBtn').onclick=()=>{try{validateDiscount();renderPayment();showStep(2)}catch(e){toast(e.message,'error')}};$('cashReceived').oninput=updateChange;document.querySelectorAll('input[name="paymentMethod"]').forEach(i=>i.onchange=updateMethod);$('backToDiscountBtn').onclick=()=>showStep(1);$('confirmPaymentBtn').onclick=checkout;$('newSaleBtn').onclick=startNewSale;$('receiptNewSaleBtn').onclick=startNewSale;$('printReceiptBtn').onclick=()=>window.print();$('salesHistoryBtn').onclick=async()=>{$('checkoutView').classList.add('rf-hidden');$('historyView').classList.remove('rf-hidden');await loadHistory()};$('closeHistoryBtn').onclick=()=>showStep(0);$('saleFilters').onclick=e=>{const b=e.target.closest('[data-filter]');if(!b)return;state.saleFilter=b.dataset.filter;$('saleFilters').querySelectorAll('button').forEach(btn=>btn.classList.toggle('active',btn===b));renderHistory()};$('historySearch').oninput=renderHistory;$('historyRows').onclick=e=>{const b=e.target.closest('[data-resume],[data-receipt]');if(b)openSale(Number(b.dataset.resume??b.dataset.receipt),b.dataset.receipt?'receipt':'resume')};
+$('searchProductsBtn').onclick=loadProducts;$('productSearch').addEventListener('keydown',e=>{if(e.key==='Enter')loadProducts()});$('saveDraftBtn').onclick=saveDraft;$('voidDraftBtn').onclick=voidDraft;$('toDiscountBtn').onclick=()=>{if(!state.cart.length)return toast('Add items to the cart first.','error');renderDiscount();showStep(1)};$('backToCartBtn').onclick=()=>showStep(0);$('discountType').onchange=renderDiscount;$('toPaymentBtn').onclick=()=>{try{validateDiscount();renderPayment();showStep(2)}catch(e){toast(e.message,'error')}};$('cashReceived').oninput=updateChange;document.querySelectorAll('input[name="paymentMethod"]').forEach(i=>i.onchange=updateMethod);$('backToDiscountBtn').onclick=()=>showStep(1);$('confirmPaymentBtn').onclick=openPaymentConfirmation;
+$('paymentVerified').onchange=updatePaymentConfirmationAction;
+$('paymentConfirmFinish').onclick=checkout;
+$('paymentConfirmModal').querySelectorAll('[data-close-payment]').forEach(button=>button.onclick=closePaymentConfirmation);
+document.addEventListener('keydown',handlePaymentModalKeys);$('newSaleBtn').onclick=startNewSale;$('receiptNewSaleBtn').onclick=startNewSale;$('printReceiptBtn').onclick=()=>window.print();$('salesHistoryBtn').onclick=async()=>{$('checkoutView').classList.add('rf-hidden');$('historyView').classList.remove('rf-hidden');await loadHistory()};$('closeHistoryBtn').onclick=()=>showStep(0);$('saleFilters').onclick=e=>{const b=e.target.closest('[data-filter]');if(!b)return;state.saleFilter=b.dataset.filter;$('saleFilters').querySelectorAll('button').forEach(btn=>btn.classList.toggle('active',btn===b));renderHistory()};$('historySearch').oninput=renderHistory;$('historyRows').onclick=e=>{const b=e.target.closest('[data-resume],[data-receipt]');if(b)openSale(Number(b.dataset.resume??b.dataset.receipt),b.dataset.receipt?'receipt':'resume')};
 try{const d=await api('/config');state.discountRate=d.approved_discount_rate==null?null:Number(d.approved_discount_rate)}catch(e){toast('Could not load the discount configuration: '+e.message,'error')}await loadProducts();renderCart();showStep(0);});
 })();
