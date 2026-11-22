@@ -64,14 +64,17 @@ if not secret_key or len(secret_key) < 32:
     raise RuntimeError(
         "FLASK_SECRET_KEY is missing or too short."
     )
+# Enable production security settings on Render
+IS_PRODUCTION = os.getenv("APP_ENV", "development").lower() == "production"
 
 app.config.update(
     SECRET_KEY=secret_key,
     SESSION_COOKIE_HTTPONLY=True,
     SESSION_COOKIE_SAMESITE="Lax",
-    SESSION_COOKIE_SECURE=False,  # Local development only
+    SESSION_COOKIE_SECURE=IS_PRODUCTION,
     PERMANENT_SESSION_LIFETIME=timedelta(hours=8),
 )
+
 
 
 # ==========================================
@@ -370,9 +373,8 @@ app.register_blueprint(reservations_bp)
 # ==========================================
 
 if __name__ == "__main__":
-
     app.run(
         host="127.0.0.1",
         port=5000,
-        debug=True
+        debug=False
     )
