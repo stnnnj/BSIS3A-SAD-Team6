@@ -3,10 +3,14 @@ import os
 import ssl
 from pathlib import Path
 
+import certifi
 import pymysql
 from dotenv import load_dotenv
 
-# Load environment variables from the project root
+# ==========================================
+# ENVIRONMENT CONFIGURATION
+# ==========================================
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
@@ -20,7 +24,6 @@ def get_db_connection():
         "TIDB_USER",
         "TIDB_PASSWORD",
         "TIDB_DATABASE",
-        "TIDB_CA_PATH",
     ]
 
     # Check for missing configuration
@@ -32,22 +35,38 @@ def get_db_connection():
             + ", ".join(missing)
         )
 
-    # Load CA certificate and verify server identity
-    ca_path = Path(os.environ["TIDB_CA_PATH"])
+    # ==========================================
+    # TLS CERTIFICATE CONFIGURATION
+    # ==========================================
 
-    if not ca_path.is_file():
-        raise FileNotFoundError(
-            f"TiDB CA certificate not found: {ca_path}"
-        )
+    # Windows: Use existing custom CA certificate.
+    # Render Linux: Use certifi when no custom CA is set.
+    custom_ca = os.getenv("TIDB_CA_PATH")
 
+    if custom_ca:
+        ca_path = Path(custom_ca)
+
+        if not ca_path.is_file():
+            raise FileNotFoundError(
+                f"TiDB CA certificate not found: {ca_path}"
+            )
+
+        ca_file = str(ca_path)
+    else:
+        ca_file = certifi.where()
+
+    # Require certificate and hostname verification
     tls_context = ssl.create_default_context(
-        cafile=str(ca_path)
+        cafile=ca_file
     )
 
     tls_context.verify_mode = ssl.CERT_REQUIRED
     tls_context.check_hostname = True
 
-    # Connect to TiDB Cloud
+    # ==========================================
+    # TIDB CLOUD CONNECTION
+    # ==========================================
+
     return pymysql.connect(
         host=os.environ["TIDB_HOST"],
         port=int(os.environ["TIDB_PORT"]),
