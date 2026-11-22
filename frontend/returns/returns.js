@@ -4,7 +4,7 @@
   const $ = id => document.getElementById(id);
   const money = value => '₱' + Number(value || 0).toLocaleString('en-PH', {minimumFractionDigits:2, maximumFractionDigits:2});
   let currentOperatorName = '';
-  const state = {sale:null, itemIndex:null, step:1, reviewed:null, completed:null, busy:false};
+  const state = {sale:null, itemIndex:null, step:1, reviewed:null, completed:null, busy:false, historyVisible:false, completedReceipts:[]};
   const selectedItem = () => state.sale && state.itemIndex !== null ? state.sale.items[state.itemIndex] : null;
   const remaining = item => Math.max(0, item.sold - item.returned);
   const setText = (id, value) => { $(id).textContent = value === null || value === undefined ? '' : String(value); };
@@ -16,6 +16,11 @@
   }
   function setStep(step) {
     state.step = step;
+    state.historyVisible = false;
+    $('returnStepper').classList.remove('d-none');
+    $('returnsHistoryPanel').classList.add('d-none');
+    $('returnsHistoryBtn').disabled = step === 2 || state.busy;
+    $('returnsHistoryBtn').setAttribute('aria-pressed', 'false');
     [1,2,3].forEach(n => {
       $(`returnStep${n}`).classList.toggle('d-none', n !== step);
       const marker = $(`stepMarker${n}`);
@@ -25,6 +30,7 @@
       if (n === step) marker.setAttribute('aria-current', 'step'); else marker.removeAttribute('aria-current');
     });
     $('completeActions').classList.toggle('d-none', step !== 3);
+    $('refreshReturnsBtn').disabled = step === 2 || state.busy;
     if (step === 1) {
       setText('returnHeading', 'Return / Refund');
       setText('returnSubtitle', 'Verify the original receipt and select items to return.');
@@ -36,6 +42,38 @@
       setText('returnSubtitle', `${state.completed.reference} · ${state.completed.recorded_at} · ${currentOperatorName}`);
     }
     alertMsg('');
+  }
+  function openHistory() {
+    if (state.busy || state.step === 2) return;
+    state.historyVisible = true;
+    $('returnStepper').classList.add('d-none');
+    [1, 2, 3].forEach(n => $(`returnStep${n}`).classList.add('d-none'));
+    $('returnsHistoryPanel').classList.remove('d-none');
+    $('completeActions').classList.add('d-none');
+    $('returnsHistoryBtn').disabled = true;
+    $('returnsHistoryBtn').setAttribute('aria-pressed', 'true');
+    setText('returnHeading', 'Returns history');
+    setText('returnSubtitle', 'Review recorded refunds and their individual return receipts.');
+    alertMsg('');
+    loadReturnHistory();
+  }
+  function closeHistory() {
+    setStep(state.step);
+  }
+  function showReturnReceipt(entry) {
+    setText('returnReceiptRef', entry.reference || '—');
+    setText('returnReceiptOriginal', entry.receipt_no || '—');
+    setText('returnReceiptDate', entry.date || '—');
+    setText('returnReceiptCustomer', entry.customer || 'Walk-in');
+    setText('returnReceiptProduct', entry.product || '—');
+    setText('returnReceiptQty', entry.quantity ?? '—');
+    setText('returnReceiptReason', entry.reason || 'Not recorded');
+    setText('returnReceiptNotes', entry.condition_notes || 'Not recorded');
+    setText('returnReceiptMethod', entry.refund_method || 'Not recorded');
+    setText('returnReceiptRestock', entry.restocked ? 'Yes' : 'No');
+    setText('returnReceiptOperator', entry.processed_by ? `User ID ${entry.processed_by}` : 'Not recorded');
+    setText('returnReceiptAmount', money(entry.refund_amount));
+    window.bootstrap.Modal.getOrCreateInstance($('returnReceiptModal')).show();
   }
   function renderSale() {
     const sale = state.sale;
@@ -96,6 +134,174 @@
     setText('restockLabel', item ? `Restock returned item · ${qty > 0 ? '+' + qty + ' ' : ''}${item.name}` : 'Restock returned item');
     setText('refundHelp', 'Refund amount uses the original receipt. Restock only resellable items.');
   }
+
+  function showHistoryMessage(message) {
+    const body = $('returnsHistoryBody');
+    body.replaceChildren();
+    const row = document.createElement('tr');
+    const cell = document.createElement('td');
+    cell.colSpan = 9;
+    cell.className = 'text-center text-muted py-4';
+    cell.textContent = message;
+    row.appendChild(cell);
+    body.appendChild(row);
+  }
+  function renderReturnHistory(entries) {
+    const body = $('returnsHistoryBody');
+    body.replaceChildren();
+    setText('returnsHistoryCount', entries.length === 200
+      ? 'Latest 200 returns shown'
+      : `${entries.length} recorded return${entries.length === 1 ? '' : 's'}`);
+    if (!entries.length) {
+      showHistoryMessage('No returns have been recorded yet.');
+      return;
+    }
+    for (const entry of entries) {
+      const tr = document.createElement('tr');
+      const values = [
+        entry.reference,
+        entry.receipt_no,
+        entry.date,
+        entry.product,
+        entry.quantity,
+        money(entry.refund_amount),
+        entry.refund_method || '—',
+        entry.restocked ? 'Yes' : 'No'
+      ];
+      values.forEach((value, index) => {
+        const cell = document.createElement(index < 2 ? 'th' : 'td');
+        if (index < 2) cell.scope = 'row';
+        cell.textContent = value;
+        tr.appendChild(cell);
+      });
+      const action = document.createElement('td');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'btn btn-outline-secondary btn-sm';
+      button.textContent = 'Return receipt';
+      button.setAttribute('aria-label', `View return receipt ${entry.reference}`);
+      button.addEventListener('click', () => showReturnReceipt(entry));
+      action.appendChild(button);
+      tr.appendChild(action);
+      body.appendChild(tr);
+    }
+  }
+  async function loadReturnHistory() {
+    setText('returnsHistoryCount', 'Loading history...');
+    showHistoryMessage('Loading return history...');
+    try {
+      const res = await fetch('/api/returns/history', {
+        credentials:'same-origin', cache:'no-store'
+      });
+      if (res.status === 401) { window.location.replace('/frontend/index.html'); return; }
+      const data = await res.json();
+      if (!res.ok || !data.success || !Array.isArray(data.history)) {
+        throw Error(data.message || 'Unable to load return history.');
+      }
+      renderReturnHistory(data.history);
+    } catch (error) {
+      setText('returnsHistoryCount', 'Unable to load');
+      showHistoryMessage('Unable to load return history. Click Refresh to try again.');
+    }
+  }
+  function clearReturnDraft() {
+    state.sale = null; state.itemIndex = null;
+    state.reviewed = null; state.completed = null;
+    $('receiptSearch').value = '';
+    $('returnQuantity').value = '';
+    $('returnReason').value = '';
+    $('conditionNotes').value = '';
+    $('refundMethod').value = '';
+    $('restockCheck').checked = false;
+    $('verifyCheck').checked = false;
+    $('confirmRefundBtn').disabled = true;
+    renderSale();
+  }
+  async function refreshReturns() {
+    if (state.busy || (state.step === 2 && !state.historyVisible)) return;
+    const button = $('refreshReturnsBtn');
+    const stayInHistory = state.historyVisible;
+    button.disabled = true;
+    button.textContent = 'Refreshing...';
+    clearReturnDraft();
+    state.step = 1;
+    if (!stayInHistory) setStep(1);
+    try {
+      await Promise.all([loadCompletedReceipts(), loadReturnHistory()]);
+    } finally {
+      button.textContent = '↻ Refresh';
+      button.disabled = state.busy || state.step === 2;
+    }
+  }
+
+  function showReceiptListMessage(message) {
+    const body = $('completedReceiptsBody');
+    body.replaceChildren();
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 5;
+    td.className = 'text-center text-muted py-3';
+    td.textContent = message;
+    tr.appendChild(td);
+    body.appendChild(tr);
+  }
+  function renderCompletedReceipts() {
+    const receipts = state.completedReceipts;
+    setText('completedReceiptsCount', `${receipts.length} completed receipt${receipts.length === 1 ? '' : 's'}`);
+    if (!receipts.length) {
+      showReceiptListMessage('No completed receipts found.');
+      return;
+    }
+    const body = $('completedReceiptsBody');
+    body.replaceChildren();
+    for (const sale of receipts) {
+      const tr = document.createElement('tr');
+      if (state.sale?.receipt_no === sale.receipt_no) tr.classList.add('table-active');
+      const receipt = document.createElement('th');
+      receipt.scope = 'row';
+      receipt.textContent = sale.receipt_no;
+      const date = document.createElement('td');
+      const dateObj = new Date(sale.sale_date);
+      date.textContent = Number.isNaN(dateObj.getTime()) ? '—' : dateObj.toLocaleString('en-PH', {dateStyle:'short',timeStyle:'short'});
+      const customer = document.createElement('td');
+      customer.textContent = sale.customer_name || 'Walk-in';
+      const total = document.createElement('td');
+      total.textContent = money(sale.total_amount);
+      const action = document.createElement('td');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'btn btn-outline-secondary btn-sm';
+      button.textContent = 'View items';
+      button.setAttribute('aria-label', `View items for receipt ${sale.receipt_no}`);
+      button.addEventListener('click', () => {
+        $('receiptSearch').value = sale.receipt_no;
+        findReceipt();
+      });
+      action.appendChild(button);
+      tr.append(receipt, date, customer, total, action);
+      body.appendChild(tr);
+    }
+  }
+  async function loadCompletedReceipts() {
+    setText('completedReceiptsCount', 'Loading receipts...');
+    showReceiptListMessage('Loading completed receipts...');
+    try {
+      // Reuse the actual Sales/POS API; no new backend or database columns.
+      const res = await fetch('/api/retail/sales', {credentials:'same-origin', cache:'no-store'});
+      if (res.status === 401) { window.location.replace('/frontend/index.html'); return; }
+      const data = await res.json();
+      if (!res.ok || !data.success || !Array.isArray(data.sales)) {
+        throw Error(data.message || 'Could not load completed receipts.');
+      }
+      state.completedReceipts = data.sales.filter(s => s.status === 'Completed' && s.receipt_no);
+      renderCompletedReceipts();
+    } catch (err) {
+      state.completedReceipts = [];
+      setText('completedReceiptsCount', 'Unable to load');
+      showReceiptListMessage('Completed receipts could not be loaded. You can still search by receipt number.');
+      alertMsg(err.message);
+    }
+  }
   async function findReceipt() {
     const query = $('receiptSearch').value.trim();
     state.sale = null; state.itemIndex = null; state.reviewed = null;
@@ -113,19 +319,16 @@
       $('returnReason').value = ''; $('conditionNotes').value = '';
       $('restockCheck').checked = false; $('refundMethod').value = '';
       renderSale();
+      renderCompletedReceipts();
       if (!data.sale.items.some(item => remaining(item) > 0)) alertMsg('No available quantity remains for return on this receipt.');
     } catch (err) {
       state.sale = null; renderSale(); alertMsg(err.message);
     } finally { $('lookupBtn').disabled = false; }
   }
   function resetToStart() {
-    state.sale = null; state.itemIndex = null;
-    state.reviewed = null; state.completed = null;
-    $('receiptSearch').value = ''; $('returnQuantity').value = '';
-    $('returnReason').value = ''; $('conditionNotes').value = '';
-    $('refundMethod').value = ''; $('restockCheck').checked = false;
-    $('verifyCheck').checked = false; $('confirmRefundBtn').disabled = true;
-    renderSale(); setStep(1);
+    clearReturnDraft();
+    setStep(1);
+    refreshReturns();
   }
   function getDraft() {
     const item = selectedItem();
@@ -201,8 +404,13 @@
       setText('completeSource', `${result.reference} → ${result.receipt_no}`);
       setText('stockBadge', result.restocked ? 'Restocked' : 'Not restocked');
       setStep(3);
+      await Promise.all([loadReturnHistory(), loadCompletedReceipts()]);
     } catch (err) { alertMsg(err.message); }
-    finally {state.busy = false; $('confirmRefundBtn').disabled = !$('verifyCheck').checked;}
+    finally {
+      state.busy = false;
+      $('confirmRefundBtn').disabled = !$('verifyCheck').checked;
+      $('refreshReturnsBtn').disabled = state.step === 2;
+    }
   }
   async function setupAuth() {
     try {
@@ -218,7 +426,8 @@
       document.querySelector('[data-nav="dashboard"]').href = role === 'Owner' ? '../owner-dashboard.html' : '../staff-dashboard.html';
       document.querySelector('[data-nav="returns"]').href = 'returns.html';
       document.querySelectorAll('[data-owner-only]').forEach(el => el.classList.toggle('d-none', role !== 'Owner'));
-    } catch (err) {alertMsg('Could not verify your login. Open this page through the Flask server.');}
+      return true;
+    } catch (err) {alertMsg('Could not verify your login. Open this page through the Flask server.'); return false;}
   }
   async function logout() {
     try {
@@ -228,8 +437,12 @@
     } catch (err) {alertMsg(err.message);}
   }
   document.addEventListener('DOMContentLoaded', () => {
+    $('receiptSearch').value = ''; // Do not restore or guess a receipt on reload.
     renderSale(); setStep(1);
     $('lookupBtn').addEventListener('click', findReceipt);
+    $('refreshReturnsBtn').addEventListener('click', refreshReturns);
+    $('returnsHistoryBtn').addEventListener('click', openHistory);
+    $('backToReturnsBtn').addEventListener('click', closeHistory);
     $('receiptSearch').addEventListener('keydown', e => {if (e.key === 'Enter') {e.preventDefault(); findReceipt();}});
     $('returnQuantity').addEventListener('input', updateSummary);
     $('restockCheck').addEventListener('change', updateSummary);
@@ -243,6 +456,10 @@
     $('newReturnBottom').addEventListener('click', resetToStart);
     $('printBtn').addEventListener('click', () => window.print());
     $('logoutBtn').addEventListener('click', logout);
-    setupAuth();
+    setupAuth().then(authenticated => { if (authenticated) refreshReturns(); });
+  });
+  window.addEventListener('pageshow', () => {
+    // Also handle browser back/forward cache restores.
+    if (!state.sale) $('receiptSearch').value = '';
   });
 })();
