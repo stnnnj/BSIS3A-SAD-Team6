@@ -19,3 +19,70 @@ body { font-family: "Segoe UI", Arial, sans-serif; background: var(--off-white);
 .dashboard-sidebar .nav-link { font-size: 1rem; }
 .dashboard-sidebar .nav-link.active { border-left-color: var(--teal); }
 @media (max-width: 767.98px) { .dashboard-sidebar { min-height: auto; } }
+
+/* Validation feedback for reservation down payments. */
+#resDeposit.is-invalid { border-color: #b42332; box-shadow: 0 0 0 .15rem rgba(180,35,50,.09); }
+#resDepositError:not([hidden]) { display: block; font-size: .8rem; margin-top: 5px; color: #b42332; }
+
+
+/* Native-looking reservation cancellation confirmation (replaces window.confirm). */
+body.rf-cancel-open { overflow: hidden; }
+.rf-cancel-modal { position:fixed; inset:0; z-index:2100; display:flex; justify-content:center; align-items:center; padding:18px; }
+.rf-cancel-backdrop { position:absolute; inset:0; background:rgba(11,19,32,.62); backdrop-filter:blur(3px); }
+.rf-cancel-dialog { position:relative; z-index:1; width:min(100%,540px); max-height:min(94vh,850px); overflow-y:auto; background:#fff; border:1px solid #e2e8ee; border-radius:18px; box-shadow:0 25px 80px rgba(2,17,33,.35); outline:none; }
+.rf-cancel-dialog-header { position:relative; padding:25px 28px 20px; border-bottom:1px solid #f0e5e6; background:#fff9f9; }
+.rf-cancel-eyebrow { margin-bottom:7px; font-size:10px; font-weight:800; letter-spacing:.14em; color:#aa3340; }
+.rf-cancel-dialog-header h2 { font-size:21px; font-weight:800; letter-spacing:-.025em; color:#172940; margin:0 35px 6px 0; }
+.rf-cancel-dialog-header p { font-size:13px; line-height:1.5; color:#667789; margin:0; }
+.rf-cancel-x { position:absolute; top:14px; right:15px; border:0; border-radius:9px; width:34px; height:34px; font-size:25px; line-height:1; color:#788795; background:transparent; }
+.rf-cancel-x:hover { background:#f4e5e7; color:#913441; }
+.rf-cancel-dialog-body { padding:20px 28px 21px; }
+.rf-cancel-details { background:#f6f8fa; border:1px solid #e7edf2; border-radius:12px; padding:14px 17px; display:grid; gap:11px; }
+.rf-cancel-details > div { display:flex; justify-content:space-between; align-items:baseline; gap:12px; font-size:13px; }
+.rf-cancel-details span { color:#607287; }
+.rf-cancel-details strong { color:#182e45; text-align:right; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; max-width:58%; }
+.rf-cancel-reason-label { font-size:12px; font-weight:800; color:#46586c; margin:18px 0 8px; }
+.rf-cancel-reason { padding:11px 13px; background:#fff; border:1px solid #e1e8ee; border-radius:9px; color:#24394e; font-size:13px; line-height:1.5; white-space:pre-wrap; overflow-wrap:anywhere; margin:0; max-height:120px; overflow:auto; }
+.rf-cancel-warning { display:grid; gap:6px; margin-top:18px; padding:13px 14px; border:1px solid #f0dcb0; border-left:3px solid #e6a740; background:#fff9e9; color:#72571f; border-radius:10px; font-size:12px; line-height:1.55; }
+.rf-cancel-warning strong { color:#704f12; }
+.rf-cancel-error { padding:11px 13px; margin-top:13px; background:#fff1f2; border:1px solid #e9bdc2; border-radius:9px; color:#9d2f42; font-size:12px; }
+.rf-cancel-dialog-actions { display:flex; gap:10px; justify-content:flex-end; padding:17px 28px 23px; border-top:1px solid #edf1f4; }
+.rf-cancel-dialog-actions .btn { min-height:44px; border-radius:10px; font-size:13px; padding:10px 18px; font-weight:700; }
+.rf-cancel-dialog-actions .btn-danger { background:#bc303e; border-color:#bc303e; }
+.rf-cancel-dialog-actions .btn-danger:hover { background:#a32a37; border-color:#a32a37; }
+.rf-cancel-dialog-actions .btn:disabled { opacity:.6; cursor:wait; }
+@media(max-width:560px) { .rf-cancel-modal { padding:12px; } .rf-cancel-dialog-header { padding:22px 18px 16px; } .rf-cancel-dialog-header h2 { font-size:19px; } .rf-cancel-dialog-body { padding:17px 18px; } .rf-cancel-dialog-actions { padding:13px 18px 18px; } .rf-cancel-dialog-actions .btn { flex:1; padding:10px 8px; } .rf-cancel-details > div { font-size:12px; } }
+@media print { .rf-cancel-modal { display:none!important; } }
+
+/* Reservation creation review - matches the cancellation dialog without the danger palette. */
+body.rf-save-open { overflow:hidden; }
+.rf-save-modal { position:fixed; inset:0; z-index:2200; display:flex; justify-content:center; align-items:center; padding:16px; }
+.rf-save-backdrop { position:absolute; inset:0; background:rgba(11,19,32,.62); backdrop-filter:blur(3px); }
+.rf-save-dialog { position:relative; z-index:1; width:min(100%,535px); max-height:min(94vh,900px); display:flex; flex-direction:column; background:#fff; border:1px solid #dfe8ed; border-radius:18px; box-shadow:0 25px 80px rgba(2,17,33,.32); outline:none; overflow:hidden; }
+.rf-save-dialog-header { position:relative; padding:24px 27px 17px; border-bottom:1px solid #e4edea; background:#f7fcfa; flex-shrink:0; }
+.rf-save-eyebrow { font-size:10px; color:#16806b; letter-spacing:.13em; font-weight:800; margin-bottom:7px; }
+.rf-save-dialog-header h2 { margin:0 34px 6px 0; font-size:21px; font-weight:800; color:#162b43; letter-spacing:-.02em; }
+.rf-save-dialog-header p { margin:0; color:#647687; font-size:13px; line-height:1.5; }
+.rf-save-close { position:absolute; top:15px; right:15px; width:35px; height:35px; border:0; border-radius:9px; background:transparent; color:#647687; font-size:24px; line-height:1; }
+.rf-save-close:hover { background:#e7f2ef; color:#1d5f55; }
+.rf-save-dialog-content { padding:19px 27px; overflow:auto; }
+.rf-save-review-fields { display:grid; gap:9px; padding:13px 16px; border:1px solid #e2e9ef; border-radius:11px; background:#f6f8fa; }
+.rf-save-review-fields > div, .rf-save-amounts > div { display:flex; align-items:baseline; justify-content:space-between; gap:14px; font-size:13px; }
+.rf-save-review-fields span, .rf-save-amounts span { color:#617386; }
+.rf-save-review-fields strong, .rf-save-amounts strong { color:#172b44; text-align:right; font-variant-numeric:tabular-nums; max-width:65%; overflow-wrap:anywhere; }
+.rf-save-lineitems { display:grid; gap:7px; margin:14px 0; padding:0 4px; max-height:125px; overflow:auto; }
+.rf-save-lineitems > div { display:flex; justify-content:space-between; gap:12px; font-size:12px; color:#4c5e70; }
+.rf-save-lineitems strong { color:#1b2e44; text-align:right; white-space:nowrap; }
+.rf-save-amounts { border-top:1px dashed #ccd9e1; padding-top:14px; display:grid; gap:10px; }
+.rf-save-amounts .rf-save-deposit-line strong { color:#16806b; }
+.rf-save-amounts .rf-save-balance-line { padding-top:10px; border-top:1px solid #e1e8ed; font-size:16px; font-weight:800; }
+.rf-save-verify { display:flex; align-items:flex-start; gap:10px; background:#eaf8f3; border:1px solid #beded3; border-radius:10px; padding:12px 13px; color:#1a6454; font-weight:650; font-size:12px; line-height:1.55; cursor:pointer; margin-top:18px; }
+.rf-save-verify input { flex:0 0 17px; margin-top:2px; width:17px; height:17px; accent-color:#17816a; }
+.rf-save-notice { font-size:12px; line-height:1.5; color:#607487; background:#f7f9fb; border-left:3px solid #a2b4c2; border-radius:7px; padding:10px 13px; margin:12px 0 0; }
+.rf-save-error { padding:11px 13px; background:#fff1f2; border:1px solid #e9bdc2; border-radius:9px; color:#982f42; font-size:12px; margin-top:12px; }
+.rf-save-actions { display:flex; justify-content:flex-end; gap:10px; padding:17px 27px 21px; border-top:1px solid #e8eef2; flex-shrink:0; }
+.rf-save-actions .btn { min-height:43px; border-radius:10px; padding:10px 17px; font-size:13px; font-weight:700; }
+.rf-save-actions .btn:disabled { opacity:.5; cursor:not-allowed; }
+@media(max-width:560px) { .rf-save-modal { padding:11px; } .rf-save-dialog-header { padding:21px 17px 16px; } .rf-save-dialog-header h2 { font-size:19px; } .rf-save-dialog-content { padding:16px 17px; } .rf-save-actions { padding:13px 17px 17px; } .rf-save-actions .btn { flex:1; padding:10px 8px; font-size:12px; } }
+@media print { .rf-save-modal { display:none!important; } }
+.rf-save-verify[hidden] { display:none!important; }
