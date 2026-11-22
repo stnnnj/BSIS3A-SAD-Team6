@@ -148,9 +148,11 @@ def locked_products(cursor, quantities, excluded_order=None):
 
 def get_sale(cursor, sale_id):
     cursor.execute(
-        """SELECT sale_id,order_id,receipt_no,sale_date,customer_name,discount_type,
-                  discount_amount,discount_id_no,payment_method,total_amount,status,user_id
-           FROM sales WHERE sale_id=%s""",
+        """SELECT s.sale_id,s.order_id,s.receipt_no,s.sale_date,s.customer_name,
+                  s.discount_type,s.discount_amount,s.discount_id_no,s.payment_method,
+                  s.total_amount,s.status,s.user_id,u.name AS cashier_name
+           FROM sales s LEFT JOIN users u ON u.user_id=s.user_id
+           WHERE s.sale_id=%s""",
         (sale_id,),
     )
     sale = cursor.fetchone()
@@ -212,10 +214,17 @@ sales_bp = Blueprint("retailflow_sales", __name__)
 
 
 def approved_discount_rate():
-    """Optional finance-approved rate; disabled unless approved and configured."""
+    """Store-offered Senior/PWD concession for this academic retail demo.
+
+    Default: 20% on the whole checkout subtotal. This is a voluntary STORE
+    discount, not a claim that a specific product is legally entitled to the
+    statutory 20% discount or VAT exemption. RetailFlow cannot determine legal
+    item eligibility from its existing products schema, and it does NOT remove
+    VAT. An owner may override the store rate with CCMC_APPROVED_DISCOUNT_RATE.
+    """
     setting = os.environ.get("CCMC_APPROVED_DISCOUNT_RATE", "").strip()
     if not setting:
-        return None
+        return Decimal("0.20")
     try:
         rate = Decimal(setting)
     except InvalidOperation:
@@ -230,7 +239,9 @@ def approved_discount_rate():
 @endpoint
 def configuration():
     rate = approved_discount_rate()
-    return jsonify(success=True, approved_discount_rate=float(rate) if rate is not None else None)
+    return jsonify(success=True, approved_discount_rate=float(rate),
+                   discount_policy="store_concession",
+                   vat_exemption_applied=False)
 
 
 @sales_bp.get("/api/retail/products")
@@ -401,8 +412,11 @@ def checkout():
     if len(discount_id) > 50 or len(customer) > 100:
         fail("Customer name or discount ID exceeds the allowed length.")
     rate = approved_discount_rate()
-    if discount_type != "None" and (rate is None or not customer or not discount_id):
-        fail("A configured discount rate, customer name, and valid ID are required.")
+    if discount_type != "None" and (not customer or not discount_id):
+        fail("Customer name and a verified Senior Citizen/PWD ID number are required.")
+    if discount_type == "None":
+        discount_id = ""  # Do not associate an ID with an undiscounted transaction.
+
     method = data.get("payment_method")
     gcash_reference = str(data.get("gcash_reference") or "").strip()
     if method not in ("Cash", "GCash"):

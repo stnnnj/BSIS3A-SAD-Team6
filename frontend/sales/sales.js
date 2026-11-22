@@ -53,7 +53,11 @@ window.ModuleShared = (() => {
 const $=id=>document.getElementById(id), {api,money,escape:esc,date,toast}=ModuleShared;
 const state={products:[],cart:[],draftId:null,discountRate:null,sales:[],saleFilter:'All',step:0};
 const num=v=>Math.round((Number(v)||0)*100)/100; const total=()=>num(state.cart.reduce((s,i)=>s+i.price*i.qty,0));
-const discount=()=> $('discountType').value==='None'?0:num(total()*(state.discountRate??0));const due=()=>num(total()-discount());
+// Keep display and server in agreement: the backend is authoritative at checkout.
+// All stored item prices are PHP amounts with two decimal places.
+const discount=()=> $('discountType').value==='None'?0:
+  Math.round((Math.round(total()*100)*(state.discountRate??0))+1e-9)/100;
+const due=()=>num(total()-discount());
 const paymentMethod=()=>document.querySelector('input[name="paymentMethod"]:checked').value;
 const items=()=>state.cart.map(i=>({product_id:i.id,quantity:i.qty}));
 function showStep(n){state.step=n;$('checkoutView').classList.remove('rf-hidden');$('historyView').classList.add('rf-hidden'); ['saleItemsStep','saleDiscountStep','salePaymentStep','saleReceiptStep'].forEach((id,i)=>$(id).classList.toggle('rf-hidden',n!==i));
@@ -108,7 +112,16 @@ function addProduct(productId){
   toast(`${p.product_name} added to the cart.`);
 }
 function renderCart(){let sumQty=0;const arr=state.cart.map((i,index)=>{sumQty+=i.qty;return `<div class="d-flex justify-content-between align-items-start gap-2 py-2 border-bottom"><div class="flex-grow-1"><strong>${esc(i.name)}</strong><div class="rf-muted">${esc(i.code)} · ${money(i.price)} each</div><div class="rf-stepper mt-2"><button type="button" class="btn btn-sm btn-outline-secondary rf-qty-btn" data-qty="${index}" data-change="-1" aria-label="Decrease quantity">−</button><output>${i.qty}</output><button type="button" class="btn btn-sm btn-outline-secondary rf-qty-btn" data-qty="${index}" data-change="1" aria-label="Increase quantity">+</button><button type="button" class="btn btn-link btn-sm rf-link ms-2" data-remove="${index}">Remove</button></div></div><strong>${money(i.qty*i.price)}</strong></div>`}).join('');$('cartItems').innerHTML=arr||'<p class="rf-empty">Your cart is empty.</p>';$('cartQty').textContent=`${sumQty} units`;$('cartSubtotal').textContent=money(total());$('cartTotal').textContent=money(total());$('cartStatus').textContent=state.draftId?'Saved draft':'Unfinished';}
-function renderDiscount(){const rate=state.discountRate;const type=$('discountType').value;if(rate==null&&type!=='None'){$('discountRule').textContent='The backend has no approved discount rate configured. Select No discount, or ask your backend team to configure an approved rule.'}else{$('discountRule').textContent=type==='None'?'No discount selected.':`Configured discount: ${(rate*100).toFixed(2)}% of this sale subtotal. Eligibility must be verified by staff.`}
+function renderDiscount(){
+  const rate=state.discountRate;
+  const type=$('discountType').value;
+  if(type==='None'){
+    $('discountRule').textContent='No discount selected.';
+  }else if(!Number.isFinite(rate)||rate<0||rate>1){
+    $('discountRule').textContent='Unable to load the store discount rate. Please refresh.';
+  }else{
+    $('discountRule').textContent=`${(rate*100).toFixed(0)}% ${type==='Senior'?'Senior Citizen':'PWD'} store discount applied. Verify the customer name and ID before checkout. This is a store concession for the demo, NOT a claim of statutory eligibility or VAT exemption; ordinary clothing is not automatically eligible for the legal 20% benefit.`;
+  }
 $('discountItems').innerHTML=state.cart.map(i=>`<tr><td>${esc(i.name)}</td><td>${i.qty}</td><td>${money(i.price)}</td><td>${money(i.qty*i.price)}</td></tr>`).join('');$('discountSubtotal').textContent=money(total());$('discountAmount').textContent='−'+money(discount());$('discountTotal').textContent=money(due());}
 function renderPayment(){ updateMethod();$('paymentItems').innerHTML=state.cart.map(i=>`<div class="rf-summary-row"><span>${esc(i.name)} × ${i.qty}</span><strong>${money(i.price*i.qty)}</strong></div>`).join('');$('paymentSubtotal').textContent=money(total());$('paymentDiscount').textContent='−'+money(discount());$('paymentTotal').textContent=money(due());$('cashReceived').value=due().toFixed(2);updateChange();}
 function updateChange(){const change=Math.max(0,num($('cashReceived').value)-due());$('cashChange').textContent=money(change);}
@@ -127,16 +140,102 @@ async function startNewSale(){
 }
 async function saveDraft(){if(!state.cart.length)return toast('Add at least one product.','error');try{const r=await api('/sales/draft',{method:'POST',body:JSON.stringify({draft_id:state.draftId,items:items()})});state.draftId=r.sale_id;toast('Unfinished sale saved. No stock deducted.');renderCart()}catch(e){toast(e.message,'error')}}
 async function voidDraft(){if(!state.draftId)return toast('Only a saved unfinished sale can be voided.','error');if(!confirm('Void this unfinished sale? It will not affect inventory.'))return;try{await api('/sales/void/'+state.draftId,{method:'POST'});clearCart();toast('Draft voided.') }catch(e){toast(e.message,'error')}}
-function validateDiscount(){const t=$('discountType').value;if(t!=='None'){if(state.discountRate===null)throw Error('Approved discount rate is not configured by the backend.');if(!$('discountId').value.trim()||!$('customerName').value.trim())throw Error('Customer name and Senior/PWD ID are required.')} }
+function validateDiscount(){const t=$('discountType').value;
+  if(t!=='None'){
+    if(!Number.isFinite(state.discountRate)||state.discountRate<0||state.discountRate>1)throw Error('Store discount configuration is unavailable. Refresh the page.');
+    if(!$('discountId').value.trim()||!$('customerName').value.trim())throw Error('Customer name and verified Senior/PWD ID are required.');
+  }
+}
 async function checkout(){try{validateDiscount();const method=paymentMethod();if(method==='Cash'&&num($('cashReceived').value)<due())throw Error('Cash received must cover the amount due.');if(method==='GCash'&&!$('gcashReference').value.trim())throw Error('Enter the verified GCash transaction reference.');if(!confirm('Confirm you have received the payment and complete this sale?'))return;
 $('confirmPaymentBtn').disabled=true;const data=await api('/sales/checkout',{method:'POST',body:JSON.stringify({draft_id:state.draftId,items:items(),customer_name:$('customerName').value.trim(),discount_type:$('discountType').value,discount_id_no:$('discountId').value.trim(),payment_method:method,cash_received:method==='Cash'?num($('cashReceived').value):null,gcash_reference:method==='GCash'?$('gcashReference').value.trim():null})});renderReceipt(data.sale,{method,cash:method==='Cash'?num($('cashReceived').value):null,change:method==='Cash'?num(num($('cashReceived').value)-Number(data.sale.total_amount)):null});showStep(3);toast('Sale completed and stock deducted.');}
 catch(e){toast(e.message,'error')}finally{$('confirmPaymentBtn').disabled=false}}
-function renderReceipt(sale,tender=null){const products=sale.items||[];$('receiptContent').innerHTML=`<div class="rf-card-title"><h3>CCMC Store · Receipt</h3><span class="rf-chip">Completed</span></div><p class="rf-muted">${esc(sale.receipt_no)} · ${date(sale.sale_date)} · ${esc(sale.customer_name||'Walk-in')}</p><div class="rf-table-wrap"><table class="rf-table"><thead><tr><th>Product</th><th>Qty</th><th>Unit price</th><th>Amount</th></tr></thead><tbody>${products.map(p=>`<tr><td>${esc(p.product_name)}</td><td>${p.quantity}</td><td>${money(p.unit_price)}</td><td>${money(p.unit_price*p.quantity)}</td></tr>`).join('')}</tbody></table></div><div class="rf-summary-row"><span>Subtotal</span><strong>${money(sale.subtotal)}</strong></div><div class="rf-summary-row"><span>Discount</span><strong>−${money(sale.discount_amount)}</strong></div><div class="rf-total"><span>Total paid</span><strong>${money(sale.total_amount)}</strong></div><div class="rf-summary-row"><span>Payment method</span><strong>${esc(sale.payment_method)}</strong></div>${tender?.method==='Cash'?`<div class="rf-summary-row"><span>Tendered (not saved)</span><strong>${money(tender.cash)}</strong></div><div class="rf-summary-row"><span>Change (not saved)</span><strong>${money(tender.change)}</strong></div>`:''}`;}
+// These merchant details are intentionally not invented. Add your real branch,
+// address and contact details here if your store has supplied them.
+const RECEIPT_STORE = {
+  name: 'CCMC RetailFlow',
+  branch: '',
+  address: '',
+  contact: ''
+};
+function receiptDate(value) {
+  if (!value) return '—';
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return '—';
+  return parsed.toLocaleString('en-PH', {
+    timeZone: 'Asia/Manila', year: 'numeric', month: 'short', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hour12: true
+  });
+}
+function receiptRow(label, amount, extraClass = '') {
+  return `<div class="rf-receipt-line ${extraClass}"><span>${esc(label)}</span><strong>${esc(amount)}</strong></div>`;
+}
+function renderReceipt(sale, tender = null) {
+  if (!sale || sale.status !== 'Completed') {
+    $('receiptContent').textContent = 'A receipt is available only for completed sales.';
+    $('receiptPrintRoot').innerHTML = '';
+    return;
+  }
+  const products = Array.isArray(sale.items) ? sale.items : [];
+  const totalUnits = products.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+  const itemMarkup = products.map(item => {
+    const qty = Number(item.quantity) || 0;
+    const price = Number(item.unit_price) || 0;
+    return `<div class="rf-receipt-item">
+      <div class="rf-receipt-product">${esc(item.product_name || 'Product')}</div>
+      ${item.item_code ? `<div class="rf-receipt-sku">${esc(item.item_code)}</div>` : ''}
+      <div class="rf-receipt-item-values"><span>${qty} × ${money(price)}</span><strong>${money(price * qty)}</strong></div>
+    </div>`;
+  }).join('');
+  const hasStoreDiscount = sale.discount_type && sale.discount_type !== 'None';
+  const discountType = hasStoreDiscount
+    ? `${sale.discount_type} store discount` : 'Discount';
+  const extraStoreLines = [RECEIPT_STORE.branch, RECEIPT_STORE.address, RECEIPT_STORE.contact]
+    .filter(Boolean).map(line => `<div>${esc(line)}</div>`).join('');
+  const paymentLines = tender?.method === 'Cash'
+    ? `${receiptRow('Cash received', money(tender.cash))}${receiptRow('Change', money(tender.change))}`
+    : '';
+  const html = `<article class="rf-receipt-paper" aria-label="Completed sale receipt">
+    <header class="rf-receipt-header">
+      <div class="rf-receipt-store">${esc(RECEIPT_STORE.name)}</div>
+      ${extraStoreLines ? `<div class="rf-receipt-store-details">${extraStoreLines}</div>` : ''}
+      <div class="rf-receipt-document">SALES RECEIPT</div>
+    </header>
+    <div class="rf-receipt-divider"></div>
+    <div class="rf-receipt-meta">
+      ${receiptRow('Receipt #', sale.receipt_no || '—')}
+      ${receiptRow('Date', receiptDate(sale.sale_date))}
+      ${receiptRow('Cashier', sale.cashier_name || '—')}
+      ${receiptRow('Customer', sale.customer_name || 'Walk-in customer')}
+    </div>
+    <div class="rf-receipt-divider"></div>
+    <div class="rf-receipt-item-heading"><span>ITEMS (${totalUnits})</span><span>AMOUNT</span></div>
+    <div class="rf-receipt-items">${itemMarkup}</div>
+    <div class="rf-receipt-divider"></div>
+    <div class="rf-receipt-totals">
+      ${receiptRow('Subtotal', money(sale.subtotal))}
+      ${receiptRow(discountType, '−' + money(sale.discount_amount))}
+      ${receiptRow('TOTAL', money(sale.total_amount), 'rf-receipt-grand-total')}
+      ${receiptRow('Payment', sale.payment_method || '—')}
+      ${paymentLines}
+    </div>
+    <div class="rf-receipt-divider"></div>
+    <footer class="rf-receipt-footer">
+      <strong>THANK YOU FOR SHOPPING!</strong>
+      <span>Please keep this receipt for your records.</span>
+      ${hasStoreDiscount ? '<span>Store concession · No VAT exemption applied</span>' : ''}
+      <span>CCMC RetailFlow · Transaction record</span>
+    </footer>
+  </article>`;
+  $('receiptContent').innerHTML = html;
+  // Independent print surface: print only the small receipt, not the sidebar or cards.
+  $('receiptPrintRoot').innerHTML = html;
+}
+
 async function loadHistory(){try{const d=await api('/sales');state.sales=d.sales;renderHistory()}catch(e){toast(e.message,'error');$('historyRows').innerHTML='<tr><td colspan="7" class="rf-empty">Unable to load sales history.</td></tr>'}}
 function renderHistory(){const q=$('historySearch').value.toLowerCase();const sales=state.sales.filter(s=>(state.saleFilter==='All'||s.status===state.saleFilter)&&(`${s.receipt_no} ${s.customer_name||''}`.toLowerCase().includes(q)));$('historyRows').innerHTML=sales.map(s=>`<tr><td>${esc(s.receipt_no)}</td><td>${date(s.sale_date)}</td><td>${esc(s.customer_name||'Walk-in')}</td><td>${money(s.total_amount)}</td><td>${esc(s.payment_method)}</td><td><span class="rf-chip ${s.status==='Unfinished'?'warning':s.status==='Voided'?'danger':''}">${esc(s.status)}</span></td><td>${s.status==='Unfinished'?`<button type="button" class="btn btn-link btn-sm rf-link" data-resume="${s.sale_id}">Resume</button>`:s.status==='Completed'?`<button type="button" class="btn btn-link btn-sm rf-link" data-receipt="${s.sale_id}">Receipt</button>`:'—'}</td></tr>`).join('')||'<tr><td colspan="7" class="rf-empty">No matching sales.</td></tr>'}
 async function openSale(id,mode){try{const d=await api('/sales/'+id);if(mode==='receipt'){renderReceipt(d.sale);showStep(3);return;}state.cart=d.sale.items.map(i=>({id:i.product_id,code:i.item_code,name:i.product_name,qty:i.quantity,price:num(i.unit_price),available:Math.max(i.quantity,Number(i.available_qty||0))}));state.draftId=d.sale.sale_id;$('discountType').value=d.sale.discount_type||'None';$('customerName').value=d.sale.customer_name||'';$('discountId').value=d.sale.discount_id_no||'';renderCart();showStep(0)}catch(e){toast(e.message,'error')}}
 document.addEventListener('DOMContentLoaded',async()=>{ModuleShared.commonNav('sales');try{await ModuleShared.session()}catch{return} $('productRows').addEventListener('click',e=>{const retry=e.target.closest('[data-retry-products]');if(retry){loadProducts();return;}const b=e.target.closest('[data-add]');if(!b||b.disabled)return;addProduct(b.dataset.add)});
 $('cartItems').addEventListener('click',e=>{const b=e.target.closest('[data-qty],[data-remove]');if(!b)return;const index=Number(b.dataset.qty??b.dataset.remove);if(b.dataset.remove!==undefined)state.cart.splice(index,1);else{const i=state.cart[index];const q=i.qty+Number(b.dataset.change);if(q>i.available)return toast('Not enough available stock.','error');if(q<1)state.cart.splice(index,1);else i.qty=q}renderCart()});
 $('searchProductsBtn').onclick=loadProducts;$('productSearch').addEventListener('keydown',e=>{if(e.key==='Enter')loadProducts()});$('saveDraftBtn').onclick=saveDraft;$('voidDraftBtn').onclick=voidDraft;$('toDiscountBtn').onclick=()=>{if(!state.cart.length)return toast('Add items to the cart first.','error');renderDiscount();showStep(1)};$('backToCartBtn').onclick=()=>showStep(0);$('discountType').onchange=renderDiscount;$('toPaymentBtn').onclick=()=>{try{validateDiscount();renderPayment();showStep(2)}catch(e){toast(e.message,'error')}};$('cashReceived').oninput=updateChange;document.querySelectorAll('input[name="paymentMethod"]').forEach(i=>i.onchange=updateMethod);$('backToDiscountBtn').onclick=()=>showStep(1);$('confirmPaymentBtn').onclick=checkout;$('newSaleBtn').onclick=startNewSale;$('receiptNewSaleBtn').onclick=startNewSale;$('printReceiptBtn').onclick=()=>window.print();$('salesHistoryBtn').onclick=async()=>{$('checkoutView').classList.add('rf-hidden');$('historyView').classList.remove('rf-hidden');await loadHistory()};$('closeHistoryBtn').onclick=()=>showStep(0);$('saleFilters').onclick=e=>{const b=e.target.closest('[data-filter]');if(!b)return;state.saleFilter=b.dataset.filter;$('saleFilters').querySelectorAll('button').forEach(btn=>btn.classList.toggle('active',btn===b));renderHistory()};$('historySearch').oninput=renderHistory;$('historyRows').onclick=e=>{const b=e.target.closest('[data-resume],[data-receipt]');if(b)openSale(Number(b.dataset.resume??b.dataset.receipt),b.dataset.receipt?'receipt':'resume')};
-try{const d=await api('/config');state.discountRate=d.approved_discount_rate==null?null:Number(d.approved_discount_rate)}catch(e){toast(e.message,'error')}await loadProducts();renderCart();showStep(0);});
+try{const d=await api('/config');state.discountRate=d.approved_discount_rate==null?null:Number(d.approved_discount_rate)}catch(e){toast('Could not load the discount configuration: '+e.message,'error')}await loadProducts();renderCart();showStep(0);});
 })();
