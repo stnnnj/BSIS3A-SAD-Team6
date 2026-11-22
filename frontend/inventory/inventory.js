@@ -5,7 +5,7 @@
   "use strict";
 
   const $ = (id) => document.getElementById(id);
-  const state = { products: [], transactions: [] };
+  const state = { role: null, products: [], transactions: [] };
   const number = (value) => Number(value || 0).toLocaleString("en-PH");
   const escapeHTML = (value) =>
     String(value ?? "—").replace(
@@ -41,12 +41,64 @@
       throw new Error("Your session expired. Please sign in again.");
     }
     if (response.status === 403) {
-      window.location.replace("/frontend/staff-dashboard.html");
-      throw new Error("Owner permission is required.");
+      throw new Error(
+        payload.message || "You do not have permission for this action.",
+      );
     }
     if (!response.ok || !payload.success)
       throw new Error(payload.message || "Unable to complete request.");
     return payload;
+  }
+
+  // Build the sidebar from the server-confirmed role. This prevents Staff
+  // from ever seeing or navigating via Owner links, even after page reload.
+  const ownerNav = [
+    ["Dashboard", "/frontend/owner-dashboard.html"],
+    ["Sales / POS", "/frontend/sales/sales.html"],
+    ["Reservations", "/frontend/reservations/reservations.html"],
+    ["Returns & Refunds", "/frontend/returns/returns.html"],
+    ["Inventory", "/frontend/inventory/inventory.html"],
+    ["Products", "/frontend/products/products.html"],
+    ["Suppliers", "/frontend/suppliers/suppliers.html"],
+    ["Financial Analytics", "/frontend/financial/financial.html"],
+    ["Reports", "/frontend/reports/reports.html"],
+    ["User Accounts", "/frontend/users/users.html"],
+  ];
+  const staffNav = [
+    ["Dashboard", "/frontend/staff-dashboard.html"],
+    ["Sales / POS", "/frontend/sales/sales.html"],
+    ["Reservations", "/frontend/reservations/reservations.html"],
+    ["Returns & Refunds", "/frontend/returns/returns.html"],
+    ["Inventory", "/frontend/inventory/inventory.html"],
+  ];
+
+  function applyRole(role) {
+    if (role !== "Owner" && role !== "Staff")
+      throw new Error("Invalid account role.");
+    const isOwner = role === "Owner";
+    state.role = role;
+    document.body.dataset.role = role;
+
+    // Staff gets only five Staff tabs. Owner gets all ten Owner tabs.
+    const nav = isOwner ? ownerNav : staffNav;
+    $("inventoryNav").innerHTML = nav
+      .map(
+        ([title, url]) =>
+          `<a href="${url}" class="nav-link${title === "Inventory" ? " active" : ""}"${title === "Inventory" ? ' aria-current="page"' : ""}>${title}</a>`,
+      )
+      .join("");
+
+    $("workspaceBadge").textContent = `${role} Workspace`;
+    $("signedInLabel").textContent = `Signed in as ${role}`;
+    $("inventoryIntro").textContent = isOwner
+      ? "Monitor stock levels, review movement logs, and adjust quantities safely."
+      : "Monitor stock levels and review movement logs (view only).";
+
+    // Staff read-only on the frontend. The API separately enforces Owner-only updates.
+    document.querySelectorAll("[data-owner-only]").forEach((element) => {
+      element.classList.toggle("d-none", !isOwner);
+    });
+    document.body.style.visibility = "visible";
   }
 
   function notify(message, success = false) {
@@ -84,8 +136,7 @@
       `${filtered.length.toLocaleString("en-PH")} of ${state.products.length.toLocaleString("en-PH")} products`;
     const body = $("inventoryTable");
     if (!filtered.length) {
-      body.innerHTML =
-        '<tr><td colspan="7" class="rf-empty">No matching products found.</td></tr>';
+      body.innerHTML = `<tr><td colspan="${state.role === "Owner" ? 7 : 6}" class="rf-empty">No matching products found.</td></tr>`;
       return;
     }
     body.innerHTML = filtered
@@ -99,7 +150,7 @@
         <td class="rf-num">${number(p.current_qty)}</td>
         <td>${number(p.min_stock_level)}</td>
         <td>${stockBadge(p.stock_status)}</td>
-        <td><button class="btn btn-sm btn-outline-secondary rf-adjust-row" type="button" data-id="${Number(p.product_id)}">Adjust</button></td>
+        ${state.role === "Owner" ? `<td><button class="btn btn-sm btn-outline-secondary rf-adjust-row" type="button" data-id="${Number(p.product_id)}">Adjust</button></td>` : ""}
       </tr>`,
       )
       .join("");
@@ -124,9 +175,9 @@
 
   async function loadInventory() {
     $("inventoryTable").innerHTML =
-      '<tr><td colspan="7" class="rf-empty">Loading inventory…</td></tr>';
+      `<tr><td colspan="${state.role === "Owner" ? 7 : 6}" class="rf-empty">Loading inventory…</td></tr>`;
     try {
-      const data = await api("/api/owner/inventory/overview");
+      const data = await api("/api/inventory/overview");
       state.products = data.products || [];
       $("statProducts").textContent = number(data.stats.products);
       $("statUnits").textContent = number(data.stats.units);
@@ -145,11 +196,11 @@
           .join("");
       if (categories.includes(selectedCategory))
         $("categoryFilter").value = selectedCategory;
-      fillProductOptions();
+      if (state.role === "Owner") fillProductOptions();
       renderProducts();
     } catch (error) {
       $("inventoryTable").innerHTML =
-        '<tr><td colspan="7" class="rf-empty">Could not load inventory.</td></tr>';
+        `<tr><td colspan="${state.role === "Owner" ? 7 : 6}" class="rf-empty">Could not load inventory.</td></tr>`;
       notify(error.message);
     }
   }
@@ -158,7 +209,7 @@
     $("historyTable").innerHTML =
       '<tr><td colspan="6" class="rf-empty">Loading history…</td></tr>';
     try {
-      const data = await api("/api/owner/inventory/transactions?limit=50");
+      const data = await api("/api/inventory/transactions?limit=50");
       state.transactions = data.rows || [];
       $("historyTable").innerHTML = state.transactions.length
         ? state.transactions
@@ -187,6 +238,7 @@
   }
 
   function openAdjustment(productId = "") {
+    if (state.role !== "Owner") return notify("Only Owners may adjust stock.");
     if (!state.products.length)
       return notify("There are no products available to adjust.");
     $("adjustmentForm").reset();
@@ -196,6 +248,7 @@
 
   async function saveAdjustment(event) {
     event.preventDefault();
+    if (state.role !== "Owner") return notify("Only Owners may adjust stock.");
     const button = $("saveAdjustmentBtn");
     const payload = {
       product_id: Number($("productSelect").value),
@@ -263,12 +316,15 @@
     $("logoutBtn").addEventListener("click", logout);
     try {
       const me = await api("/api/auth/me");
-      if (me.user?.role !== "Owner") {
-        window.location.replace("/frontend/staff-dashboard.html");
+      const role = me.user?.role;
+      if (role !== "Owner" && role !== "Staff") {
+        window.location.replace("/frontend/index.html");
         return;
       }
+      applyRole(role);
       await Promise.all([loadInventory(), loadHistory()]);
     } catch (error) {
+      document.body.style.visibility = "visible";
       notify(error.message);
     }
   });

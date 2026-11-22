@@ -14,49 +14,21 @@
     <!-- This module's OWN stylesheet -->
     <link rel="stylesheet" href="/frontend/inventory/inventory.css" />
   </head>
-  <body data-role="Owner" data-module="inventory">
+  <body data-module="inventory" style="visibility: hidden">
     <div class="container-fluid">
       <div class="row min-vh-100">
-        <aside class="col-md-3 col-lg-2 dashboard-sidebar p-4 rf-sidebar">
+        <aside class="col-md-3 col-lg-2 dashboard-sidebar p-4">
           <h4 class="fw-bold text-white mb-1">CCMC RetailFlow</h4>
           <p class="sidebar-subtitle mb-5">RETAIL MANAGEMENT SYSTEM</p>
-          <nav class="nav flex-column gap-2" aria-label="Owner modules">
-            <a href="/frontend/owner-dashboard.html" class="nav-link"
-              >Dashboard</a
-            >
-            <a href="/frontend/sales/sales.html" class="nav-link"
-              >Sales / POS</a
-            >
-            <a href="/frontend/reservations/reservations.html" class="nav-link"
-              >Reservations</a
-            >
-            <a href="/frontend/returns/returns.html" class="nav-link"
-              >Returns & Refunds</a
-            >
-            <a
-              href="/frontend/inventory/inventory.html"
-              class="nav-link active"
-              aria-current="page"
-              >Inventory</a
-            >
-            <a href="/frontend/products/products.html" class="nav-link"
-              >Products</a
-            >
-            <a href="/frontend/suppliers/suppliers.html" class="nav-link"
-              >Suppliers</a
-            >
-            <a href="/frontend/financial/financial.html" class="nav-link"
-              >Financial Analytics</a
-            >
-            <a href="/frontend/reports/reports.html" class="nav-link"
-              >Reports</a
-            >
-            <a href="/frontend/users/users.html" class="nav-link"
-              >User Accounts</a
-            >
-          </nav>
-          <div class="sidebar-footer mt-5">
-            <p class="text-white mb-2">Signed in as Owner</p>
+          <!-- Populated from authenticated Owner/Staff role by inventory.js.
+           Never put Owner-only links here: this page is SHARED. -->
+          <nav
+            id="inventoryNav"
+            class="nav flex-column gap-2"
+            aria-label="Inventory navigation"
+          ></nav>
+          <div class="sidebar-footer">
+            <p id="signedInLabel" class="text-white mb-2">Signed in</p>
             <button
               id="logoutBtn"
               type="button"
@@ -75,7 +47,9 @@
                 <h5 class="fw-bold mb-1">Inventory</h5>
                 <p class="text-secondary mb-0">CCMC RetailFlow / Inventory</p>
               </div>
-              <span class="badge text-bg-light">Owner Workspace</span>
+              <span id="workspaceBadge" class="badge text-bg-light"
+                >Workspace</span
+              >
             </div>
           </header>
           <section class="dashboard-content p-4 rf-content">
@@ -85,9 +59,8 @@
               <div>
                 <div class="rf-eyebrow">STOCK CONTROL</div>
                 <h2 class="fw-bold mt-1 mb-2">Inventory</h2>
-                <p class="text-secondary mb-0">
-                  Monitor stock levels, review movement logs, and adjust
-                  quantities safely.
+                <p id="inventoryIntro" class="text-secondary mb-0">
+                  Monitor stock levels and review movement logs.
                 </p>
               </div>
               <div class="d-flex gap-2 flex-wrap">
@@ -101,6 +74,7 @@
                   id="openAdjustmentBtn"
                   type="button"
                   class="btn btn-primary"
+                  data-owner-only
                 >
                   + Adjust Stock
                 </button>
@@ -195,7 +169,13 @@
                       <th scope="col">On Hand</th>
                       <th scope="col">Minimum</th>
                       <th scope="col">Status</th>
-                      <th scope="col">Action</th>
+                      <th
+                        scope="col"
+                        id="adjustmentActionHeading"
+                        data-owner-only
+                      >
+                        Action
+                      </th>
                     </tr>
                   </thead>
                   <tbody id="inventoryTable">
