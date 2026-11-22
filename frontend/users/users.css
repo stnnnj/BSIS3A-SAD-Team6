@@ -377,3 +377,185 @@
         transition: none;
     }
 }
+
+
+/* ==========================================
+   11. RESPONSIVE USER ACCOUNT MODALS
+   Add User / Edit User
+   ========================================== */
+
+/* Keep modal windows within the screen */
+#addUserModal .modal-dialog,
+#editUserModal .modal-dialog {
+    max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
+}
+
+/* Limit modal height and preserve rounded corners */
+#addUserModal .modal-content,
+#editUserModal .modal-content {
+    display: flex;
+    flex-direction: column;
+
+    max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
+
+    overflow: hidden;
+    border-radius: 20px;
+}
+
+/* Keep the header visible */
+#addUserModal .modal-header,
+#editUserModal .modal-header {
+    flex: 0 0 auto;
+}
+
+/* Make only the form content scrollable */
+#addUserModal .modal-body,
+#editUserModal .modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    overscroll-behavior: contain;
+
+    scrollbar-width: thin;
+    scrollbar-color: #2A9D8F #F1F4F6;
+}
+
+/* Custom scrollbar for Chrome and Edge */
+#addUserModal .modal-body::-webkit-scrollbar,
+#editUserModal .modal-body::-webkit-scrollbar {
+    width: 7px;
+}
+
+#addUserModal .modal-body::-webkit-scrollbar-track,
+#editUserModal .modal-body::-webkit-scrollbar-track {
+    background: #F1F4F6;
+}
+
+#addUserModal .modal-body::-webkit-scrollbar-thumb,
+#editUserModal .modal-body::-webkit-scrollbar-thumb {
+    background: #2A9D8F;
+    border-radius: 10px;
+}
+
+/* Keep Cancel and Save buttons visible */
+#addUserModal .modal-footer,
+#editUserModal .modal-footer {
+    flex: 0 0 auto;
+
+    background: #FFFFFF;
+    border-top: 1px solid #E0E6EC;
+}
+
+
+/* ==========================================
+   12. SMALL LAPTOP AND SHORT SCREENS
+   ========================================== */
+
+@media (max-height: 700px) {
+
+    #addUserModal .modal-dialog,
+    #editUserModal .modal-dialog {
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    #addUserModal .modal-content,
+    #editUserModal .modal-content {
+        max-height: calc(100vh - 1rem);
+        max-height: calc(100dvh - 1rem);
+    }
+
+    #addUserModal .modal-header,
+    #editUserModal .modal-header {
+        padding: 16px 20px;
+    }
+
+    #addUserModal .modal-body,
+    #editUserModal .modal-body {
+        padding: 20px !important;
+    }
+
+    #addUserModal .modal-footer,
+    #editUserModal .modal-footer {
+        padding: 12px 20px;
+    }
+}
+
+
+/* ==========================================
+   13. MOBILE RESPONSIVENESS
+   ========================================== */
+
+@media (max-width: 575.98px) {
+
+    #addUserModal .modal-dialog,
+    #editUserModal .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+
+    #addUserModal .modal-content,
+    #editUserModal .modal-content {
+        max-height: calc(100vh - 1rem);
+        max-height: calc(100dvh - 1rem);
+
+        border-radius: 14px;
+    }
+
+    #addUserModal .modal-header,
+    #editUserModal .modal-header {
+        padding: 16px;
+    }
+
+    #addUserModal .modal-body,
+    #editUserModal .modal-body {
+        padding: 16px !important;
+    }
+
+    #addUserModal .modal-footer,
+    #editUserModal .modal-footer {
+        padding: 12px 16px;
+    }
+
+    #addUserModal .modal-footer .btn,
+    #editUserModal .modal-footer .btn {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+/* ==========================================
+   14. LAPTOP MODAL HEIGHT REFINEMENT
+   ========================================== */
+
+/* Allow Bootstrap to center the modal correctly */
+#addUserModal .modal-dialog,
+#editUserModal .modal-dialog {
+    max-height: none;
+}
+
+/* Give the modal breathing room on laptop screens */
+#addUserModal .modal-content,
+#editUserModal .modal-content {
+    max-height: min(88vh, 720px);
+    max-height: min(88dvh, 720px);
+}
+
+/* Keep form content scrollable */
+#addUserModal .modal-body,
+#editUserModal .modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+/* Keep footer buttons visible */
+#addUserModal .modal-footer,
+#editUserModal .modal-footer {
+    flex-shrink: 0;
+}
