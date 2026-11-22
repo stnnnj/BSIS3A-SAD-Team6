@@ -25,15 +25,67 @@ const compactPesoFormatter = new Intl.NumberFormat("en-PH", {
     maximumFractionDigits: 1
 });
 
+
 document.addEventListener("DOMContentLoaded", () => {
+
     const role = document.body.dataset.role;
 
+    // Load the correct dashboard on startup
     if (role === "Staff") {
         loadStaffDashboard();
     } else if (role === "Owner") {
         loadOwnerDashboard();
     }
+
+    // ==========================================
+    // DASHBOARD REFRESH BUTTON
+    // ==========================================
+
+    const refreshButton = document.getElementById(
+        "refreshDashboardBtn"
+    );
+
+    if (refreshButton) {
+
+        refreshButton.addEventListener("click", async () => {
+
+            // Prevent repeated clicks
+            if (refreshButton.disabled) return;
+
+            refreshButton.disabled = true;
+            refreshButton.setAttribute("aria-busy", "true");
+
+            const originalLabel = refreshButton.innerHTML;
+
+            refreshButton.textContent = "Refreshing...";
+
+            try {
+
+                // Refresh Staff Dashboard
+                if (role === "Staff") {
+                    await loadStaffDashboard();
+                }
+
+                // Refresh Owner Dashboard
+                else if (role === "Owner") {
+                    await loadOwnerDashboard();
+                }
+
+            } finally {
+
+                // Restore button after API request
+                refreshButton.innerHTML = originalLabel;
+                refreshButton.disabled = false;
+                refreshButton.removeAttribute("aria-busy");
+
+            }
+
+        });
+
+    }
+
 });
+
 
 // ==========================================
 // SHARED API REQUEST HANDLING
@@ -43,6 +95,7 @@ async function fetchDashboardData(url, render, showError) {
     try {
         const response = await fetch(url, {
             method: "GET",
+            cache: "no-store",
             credentials: "same-origin",
             headers: { "Accept": "application/json" }
         });

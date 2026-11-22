@@ -13,13 +13,26 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     let requiredRole = null;
 
+
     if (currentPage.endsWith("/owner-dashboard.html")) {
+
             requiredRole = "Owner";
+
         } else if (currentPage.endsWith("/staff-dashboard.html")) {
+
             requiredRole = "Staff";
+
+        } else if (currentPage.endsWith("/users/users.html")) {
+
+            // User Accounts is accessible to Owner only
+            requiredRole = "Owner";
+
         } else {
+
             return;
+
         }
+
 
         // Hide protected content while session is checked
         document.body.style.visibility = "hidden";

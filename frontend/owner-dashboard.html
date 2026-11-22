@@ -157,6 +157,19 @@
                 </p>
             </div>
 
+
+            <!-- DASHBOARD ACTION BUTTONS -->
+            <div class="d-flex flex-wrap align-items-center gap-2">
+
+                <!-- REFRESH BUTTON -->
+                <button
+                type="button"
+                id="refreshDashboardBtn"
+                class="btn btn-outline-secondary">
+                &#8635; Refresh
+            </button>
+
+            <!-- EXISTING VIEW REPORTS BUTTON -->
             <a
             href="/frontend/reports/reports.html"
             class="btn btn-primary">
@@ -165,41 +178,16 @@
 
     </div>
 
-    <!-- =====================================
-    SUMMARY CARDS
-    ===================================== -->
 
-    <div class="row g-4 mb-4">
+</div>
 
-        <!-- TOTAL SALES TODAY -->
-        <div class="col-12 col-sm-6 col-xl-3">
+<!-- =====================================
+SUMMARY CARDS
+===================================== -->
 
-            <div class="card h-100 owner-stat-card">
+<div class="row g-4 mb-4">
 
-                <div class="card-body p-4">
-
-                    <p class="text-secondary mb-2">
-                        Total Sales Today
-                    </p>
-
-                    <h3
-                    id="totalSalesToday"
-                    class="fw-bold mb-2"
-                    aria-live="polite">
-                    —
-                </h3>
-
-                <small class="text-secondary">
-                    Completed sales
-                </small>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- NET SALES TODAY -->
+    <!-- TOTAL SALES TODAY -->
     <div class="col-12 col-sm-6 col-xl-3">
 
         <div class="card h-100 owner-stat-card">
@@ -207,23 +195,51 @@
             <div class="card-body p-4">
 
                 <p class="text-secondary mb-2">
-                    Net Sales Today
+                    Total Sales Today
                 </p>
 
                 <h3
-                id="netSalesToday"
+                id="totalSalesToday"
                 class="fw-bold mb-2"
                 aria-live="polite">
                 —
             </h3>
 
             <small class="text-secondary">
-                After recorded refunds
+                Completed sales
             </small>
 
         </div>
 
     </div>
+
+</div>
+
+<!-- NET SALES TODAY -->
+<div class="col-12 col-sm-6 col-xl-3">
+
+    <div class="card h-100 owner-stat-card">
+
+        <div class="card-body p-4">
+
+            <p class="text-secondary mb-2">
+                Net Sales Today
+            </p>
+
+            <h3
+            id="netSalesToday"
+            class="fw-bold mb-2"
+            aria-live="polite">
+            —
+        </h3>
+
+        <small class="text-secondary">
+            After recorded refunds
+        </small>
+
+    </div>
+
+</div>
 
 </div>
 

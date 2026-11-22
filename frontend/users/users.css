@@ -559,3 +559,35 @@
 #editUserModal .modal-footer {
     flex-shrink: 0;
 }
+
+
+/* ==========================================
+   14. LAPTOP MODAL HEIGHT REFINEMENT
+   ========================================== */
+
+/* Allow Bootstrap to center the modal correctly */
+#addUserModal .modal-dialog,
+#editUserModal .modal-dialog {
+    max-height: none;
+}
+
+/* Give the modal breathing room on laptop screens */
+#addUserModal .modal-content,
+#editUserModal .modal-content {
+    max-height: min(88vh, 720px);
+    max-height: min(88dvh, 720px);
+}
+
+/* Keep form content scrollable */
+#addUserModal .modal-body,
+#editUserModal .modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+/* Keep footer buttons visible */
+#addUserModal .modal-footer,
+#editUserModal .modal-footer {
+    flex-shrink: 0;
+}
