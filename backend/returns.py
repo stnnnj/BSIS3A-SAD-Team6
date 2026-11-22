@@ -69,6 +69,96 @@ def receipt_data(cursor, receipt_no):
     }
 
 
+@returns_bp.get("/history")
+def list_return_history():
+    """Read recorded return entries from the existing database schema."""
+    conn = None
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("""
+                SELECT
+                    r.return_id,
+                    r.original_receipt_no,
+                    r.return_date,
+                    r.quantity,
+                    r.refund_amount,
+                    r.reason,
+                    r.customer_name,
+                    si.sale_item_id,
+                    p.item_code,
+                    p.product_name,
+                    EXISTS (
+                        SELECT 1
+                        FROM inventory_transactions it
+                        WHERE it.return_id = r.return_id
+                          AND it.quantity > 0
+                          AND LOWER(it.txn_type) = 'return'
+                    ) AS restocked
+                FROM returns r
+                JOIN sale_items si ON si.sale_item_id = r.sale_item_id
+                JOIN products p ON p.product_id = si.product_id
+                ORDER BY r.return_date DESC, r.return_id DESC
+                LIMIT 200
+            """)
+            records = cursor.fetchall()
+
+        def audit_value(reason, key):
+            # Metadata is appended to the existing reason TEXT field.
+            # Condition notes can span multiple lines.
+            value = reason or ""
+            prefix = f"[{key}: "
+            start = value.find("\n" + prefix)
+            if start >= 0:
+                start += 1
+            elif value.startswith(prefix):
+                start = 0
+            else:
+                return None
+            contents = value[start + len(prefix):]
+            end = contents.find("]")
+            return contents[:end] if end >= 0 else None
+
+        def clean_reason(reason):
+            text = reason or ""
+            # Return the user-selected reason without our structured audit lines.
+            for key in ("Refund method", "Processed by user ID", "Restocked", "Condition notes", "Request ID"):
+                pos = text.find("\n[" + key + ": ")
+                if pos >= 0:
+                    text = text[:pos]
+            return text.strip()
+
+        history = []
+        for row in records:
+            history.append({
+                "return_id": int(row["return_id"]),
+                "reference": f"R-{row['return_id']}",
+                "receipt_no": row["original_receipt_no"],
+                "date": (
+                    row["return_date"].isoformat()
+                    if hasattr(row["return_date"], "isoformat")
+                    else str(row["return_date"])
+                ),
+                "customer": row["customer_name"] or "",
+                "product": f"{row['item_code']} · {row['product_name']}",
+                "quantity": int(row["quantity"]),
+                "refund_amount": to_number(row["refund_amount"]),
+                "refund_method": audit_value(row["reason"], "Refund method") or "",
+                "reason": clean_reason(row["reason"]),
+                "condition_notes": audit_value(row["reason"], "Condition notes") or "",
+                "processed_by": audit_value(row["reason"], "Processed by user ID") or "",
+                "restocked": bool(row["restocked"]),
+            })
+
+        return jsonify(success=True, history=history, limit=200)
+    except Exception:
+        current_app.logger.exception("Returns history query failed")
+        return jsonify(success=False, message="Unable to load return history."), 500
+    finally:
+        if conn is not None:
+            conn.close()
+
+
 @returns_bp.get("/receipt")
 def find_receipt():
     receipt_no = (request.args.get("receipt_no") or "").strip()

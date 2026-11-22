@@ -48,14 +48,94 @@
                 <section class="dashboard-content p-4 module-content">
 
       
-<div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3"><div><h1 class="page-title mb-1" id="returnHeading">Return / Refund</h1><p class="text-muted mb-0" id="returnSubtitle">Verify the original receipt and select items to return.</p></div><div class="d-none" id="completeActions"><button type="button" class="btn btn-outline-secondary" id="printBtn">Print confirmation</button> <button type="button" class="btn btn-primary" id="newReturnTop">New return</button></div></div>
-<ol class="stepper list-unstyled d-flex gap-2 mb-4" aria-label="Return progress"><li class="step-item active" id="stepMarker1"><span class="step-circle">1</span><span>Find sale &amp; items</span></li><li class="step-item" id="stepMarker2"><span class="step-circle">2</span><span>Review refund</span></li><li class="step-item" id="stepMarker3"><span class="step-circle">3</span><span>Refund &amp; restock</span></li></ol>
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3"><div><h1 class="page-title mb-1" id="returnHeading">Return / Refund</h1><p class="text-muted mb-0" id="returnSubtitle">Verify the original receipt and select items to return.</p></div><div class="d-flex align-items-center flex-wrap gap-2"><button type="button" id="returnsHistoryBtn" class="btn btn-outline-secondary" aria-pressed="false">Returns history</button><button type="button" id="refreshReturnsBtn" class="btn btn-outline-secondary">↻ Refresh</button><div class="d-none" id="completeActions"><button type="button" class="btn btn-outline-secondary" id="printBtn">Print confirmation</button> <button type="button" class="btn btn-primary" id="newReturnTop">New return</button></div></div></div>
+<ol id="returnStepper" class="stepper list-unstyled d-flex gap-2 mb-4" aria-label="Return progress"><li class="step-item active" id="stepMarker1"><span class="step-circle">1</span><span>Find sale &amp; items</span></li><li class="step-item" id="stepMarker2"><span class="step-circle">2</span><span>Review refund</span></li><li class="step-item" id="stepMarker3"><span class="step-circle">3</span><span>Refund &amp; restock</span></li></ol>
 <div id="returnAlert" class="alert alert-danger d-none" role="alert"></div>
-<section id="returnStep1" aria-label="Find sale and return items"><div class="row g-3 align-items-start"><div class="col-12 col-xl-8"><article class="module-card p-3 p-xl-4 mb-3"><h2 class="panel-title mb-3">Original sale</h2><div class="input-group mb-2"><span class="input-group-text" aria-hidden="true">⌕</span><input id="receiptSearch" class="form-control" type="search" aria-label="Receipt number" placeholder="Search receipt number" list="receiptOptions"><datalist id="receiptOptions"></datalist><button id="lookupBtn" class="btn btn-outline-secondary" type="button">Find receipt</button></div><p class="text-muted small mb-3" id="saleMeta"></p><div class="table-responsive"><table class="table module-table mb-0"><thead><tr><th>Sale item</th><th>Sold</th><th>Returned</th><th>Net / unit</th><th>Select</th></tr></thead><tbody id="saleItemsBody"></tbody></table></div></article>
+<section id="returnStep1" aria-label="Find sale and return items"><div class="row g-3 align-items-start"><div class="col-12 col-xl-8"><article class="module-card p-3 p-xl-4 mb-3"><h2 class="panel-title mb-3">Original sale</h2><div class="input-group mb-2"><span class="input-group-text" aria-hidden="true">⌕</span><input id="receiptSearch" class="form-control" type="search" autocomplete="off" aria-label="Receipt number" placeholder="Search receipt number" list="receiptOptions"><datalist id="receiptOptions"></datalist><button id="lookupBtn" class="btn btn-outline-secondary" type="button">Find receipt</button></div><!-- Completed receipts are loaded automatically from the existing Sales/POS API. -->
+<div id="completedReceiptsPanel" class="mb-3">
+  <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+    <span class="fw-semibold">Completed receipts</span>
+    <small id="completedReceiptsCount" class="text-muted" aria-live="polite">Loading receipts...</small>
+  </div>
+  <div class="table-responsive border rounded" style="max-height: 220px; overflow-y: auto;">
+    <table class="table table-hover table-sm align-middle mb-0">
+      <thead class="table-light">
+        <tr><th scope="col">Receipt</th><th scope="col">Date</th><th scope="col">Customer</th><th scope="col">Total</th><th scope="col">Action</th></tr>
+      </thead>
+      <tbody id="completedReceiptsBody">
+        <tr><td colspan="5" class="text-center text-muted py-3">Loading completed receipts...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<p class="text-muted small mb-3" id="saleMeta"></p><div class="table-responsive"><table class="table module-table mb-0"><thead><tr><th>Sale item</th><th>Sold</th><th>Returned</th><th>Net / unit</th><th>Select</th></tr></thead><tbody id="saleItemsBody"></tbody></table></div></article>
  <article class="module-card p-3 p-xl-4"><h2 class="panel-title mb-3">Return details</h2><form id="returnForm" novalidate><div class="row g-3"><div class="col-md-6"><label class="form-label fw-semibold" for="returnQuantity">Return quantity · <span id="maxQuantityLabel">max —</span> <span class="required">*</span></label><input type="number" min="1" step="1" class="form-control" id="returnQuantity" required></div><div class="col-md-6"><label class="form-label fw-semibold" for="returnReason">Reason <span class="required">*</span></label><select class="form-select" id="returnReason" required><option value="" selected>Select reason</option><option value="Size does not fit">Size does not fit</option><option value="Damaged item">Damaged item</option><option value="Wrong item">Wrong item</option><option value="Defective item">Defective item</option><option value="Other">Other</option></select></div><div class="col-12"><label class="form-label fw-semibold" for="conditionNotes">Condition / notes</label><textarea class="form-control" id="conditionNotes" rows="2"></textarea></div><div class="col-12"><div class="form-check"><input class="form-check-input" id="restockCheck" type="checkbox"><label class="form-check-label fw-semibold" for="restockCheck" id="restockLabel">Restock returned item</label></div></div></div><div class="form-bottom d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3 pt-3"><span class="text-muted small">* Required fields</span><div class="d-flex gap-2"><button class="btn btn-outline-secondary" type="button" id="cancelEditBtn">Cancel</button><button class="btn btn-primary" type="submit">Review refund</button></div></div></form></article></div>
- <div class="col-12 col-xl-4"><aside class="module-card p-3 p-xl-4"><h2 class="panel-title mb-3">Refund calculation</h2><dl class="totals-list"><div><dt>Original unit price</dt><dd id="originalUnit">—</dd></div><div><dt>Allocated discount / unit</dt><dd id="discountUnit">—</dd></div><div><dt>Net paid / unit</dt><dd id="netUnit">—</dd></div><div><dt>Return quantity</dt><dd id="returnQuantitySummary">—</dd></div><div class="total-emphasis"><dt>Refund amount</dt><dd id="refundAmount">—</dd></div></dl><label class="form-label fw-semibold mt-3" for="refundMethod">Refund method</label><select class="form-select" id="refundMethod"><option value="">Choose method</option><option value="Cash">Cash</option><option value="GCash">GCash</option></select><div class="notice-box mt-3"><strong>ⓘ &nbsp; Refund net amount paid</strong><p class="mb-0 mt-1" id="refundHelp">Refund amount is based on the original receipt. Restock only resellable items.</p></div><p class="text-muted small mt-3 mb-0">Confirm only after issuing the refund to the customer. This app records the refund but does not transfer funds.</p></aside></div></div></section>
+ <div class="col-12 col-xl-4"><aside class="module-card p-3 p-xl-4"><h2 class="panel-title mb-3">Refund calculation</h2><dl class="totals-list"><div><dt>Original unit price</dt><dd id="originalUnit">—</dd></div><div><dt>Allocated discount / unit</dt><dd id="discountUnit">—</dd></div><div><dt>Net paid / unit</dt><dd id="netUnit">—</dd></div><div><dt>Return quantity</dt><dd id="returnQuantitySummary">—</dd></div><div class="total-emphasis"><dt>Refund amount</dt><dd id="refundAmount">—</dd></div></dl><label class="form-label fw-semibold mt-3" for="refundMethod">Refund method</label><select class="form-select" id="refundMethod"><option value="">Choose method</option><option value="Cash">Cash</option><option value="GCash">GCash</option></select><div class="notice-box mt-3"><strong>ⓘ &nbsp; Refund net amount paid</strong><p class="mb-0 mt-1" id="refundHelp">Refund amount is based on the original receipt. Restock only resellable items.</p></div><p class="text-muted small mt-3 mb-0">Confirm only after issuing the refund to the customer. This app records the refund but does not transfer funds.</p></aside></div></div>
+
+</section>
+<article class="module-card p-3 p-xl-4 d-none" id="returnsHistoryPanel" aria-label="Returns history">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <div>
+      <h2 class="panel-title mb-1">Returns history</h2>
+      <p class="text-muted small mb-0">Recorded refunds linked to their original sales receipts.</p>
+    </div>
+    <div class="d-flex align-items-center flex-wrap gap-2">
+      <small id="returnsHistoryCount" class="text-muted" aria-live="polite">Loading history...</small>
+      <button type="button" id="backToReturnsBtn" class="btn btn-outline-secondary btn-sm">Back to returns</button>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table module-table table-hover mb-0">
+      <thead><tr><th scope="col">Return</th><th scope="col">Original receipt</th><th scope="col">Date</th><th scope="col">Product</th><th scope="col">Qty</th><th scope="col">Refund</th><th scope="col">Method</th><th scope="col">Restock</th><th scope="col">Action</th></tr></thead>
+      <tbody id="returnsHistoryBody">
+        <tr><td colspan="9" class="text-center text-muted py-4">Loading return history...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</article>
 <section id="returnStep2" class="d-none" aria-label="Review refund"><div class="alert alert-warning border-0 mb-3"><strong>ⓘ &nbsp; Please verify before confirming</strong><div class="small mt-1">Confirm only after the customer has received their Cash/GCash refund. The database will record the return and any approved restock.</div></div><div class="row g-3 align-items-start"><div class="col-12 col-xl-8"><article class="module-card p-3 p-xl-4"><h2 class="panel-title mb-3">Items being returned</h2><div class="table-responsive"><table class="table module-table"><thead><tr><th>Product</th><th>Quantity</th><th>Net / unit</th><th>Refund</th></tr></thead><tbody><tr><th id="reviewProduct"></th><td id="reviewQty"></td><td id="reviewUnit"></td><td id="reviewAmount"></td></tr></tbody></table></div><dl class="totals-list review-details"><div><dt>Original receipt</dt><dd id="reviewSale"></dd></div><div><dt>Original quantity sold</dt><dd id="reviewSold"></dd></div><div><dt>Previously returned</dt><dd id="reviewReturned"></dd></div><div><dt>Quantity after this return</dt><dd id="reviewAfter"></dd></div><div><dt>Reason</dt><dd id="reviewReason"></dd></div><div><dt>Condition</dt><dd id="reviewCondition"></dd></div></dl><div class="form-check my-3"><input id="verifyCheck" class="form-check-input" type="checkbox"><label for="verifyCheck" class="form-check-label fw-semibold">I verified the receipt, quantity and item condition.</label></div><div class="d-flex flex-wrap gap-2"><button class="btn btn-outline-secondary" id="cancelReviewBtn" type="button">Cancel</button><button class="btn btn-outline-secondary" id="backToEditBtn" type="button">Back to edit</button><button class="btn btn-primary" id="confirmRefundBtn" type="button" disabled>Confirm refund &amp; restock</button></div></article></div><div class="col-12 col-xl-4"><aside class="module-card p-3 p-xl-4"><h2 class="panel-title mb-3">Refund &amp; inventory effect</h2><dl class="totals-list"><div><dt>Refund method</dt><dd id="reviewMethod"></dd></div><div><dt>Net paid per unit</dt><dd id="reviewNet"></dd></div><div><dt>Quantity</dt><dd id="reviewCount"></dd></div><div class="total-emphasis"><dt>Give customer</dt><dd id="reviewTotal"></dd></div></dl><div class="notice-box mt-3"><strong id="reviewRestockTitle">ⓘ &nbsp; Restock selected</strong><p class="mt-1 mb-0" id="reviewStock"></p></div><p class="text-muted small mt-3 mb-0">Handled by: <span id="handlerName"></span></p></aside></div></div></section>
 <section id="returnStep3" class="d-none" aria-label="Completed preview"><div class="alert alert-success border-0 mb-3"><strong id="completeBanner"></strong><div class="small mt-1">The refund record and optional stock movement have been saved to TiDB. This application does not send payments.</div></div><div class="row g-3 align-items-start"><div class="col-12 col-xl-8"><article class="module-card p-3 p-xl-4"><div class="d-flex justify-content-between flex-wrap gap-2 align-items-center mb-3"><h2 class="panel-title m-0">Refund confirmation</h2><span class="badge text-bg-success">Recorded</span></div><div class="table-responsive"><table class="table module-table"><thead><tr><th>Returned product</th><th>Qty</th><th>Net price</th><th>Refund</th></tr></thead><tbody><tr><th id="completeProduct"></th><td id="completeQty"></td><td id="completeUnit"></td><td id="completeRefund"></td></tr></tbody></table></div><dl class="totals-list review-details"><div><dt>Sale / receipt</dt><dd id="completeSale"></dd></div><div><dt>Customer</dt><dd id="completeCustomer"></dd></div><div><dt>Return reference</dt><dd id="completeReturnRef"></dd></div><div><dt>Refund reference</dt><dd id="completeRefundRef"></dd></div><div><dt>Method</dt><dd id="completeMethod"></dd></div><div><dt>Reason</dt><dd id="completeReason"></dd></div><div class="total-emphasis"><dt>Refund recorded</dt><dd id="completeTotal"></dd></div></dl></article></div><div class="col-12 col-xl-4"><aside class="module-card p-3 p-xl-4"><div class="d-flex justify-content-between gap-2"><h2 class="panel-title">Inventory restock</h2><span class="badge text-bg-light" id="stockBadge"></span></div><dl class="totals-list"><div><dt>Product</dt><dd id="completeStockProduct"></dd></div><div><dt>Previous on-hand</dt><dd id="completePreviousStock"></dd></div><div><dt>Return quantity</dt><dd id="completeStockQty"></dd></div><div><dt>New on-hand</dt><dd id="completeNewStock"></dd></div><div><dt>Transaction</dt><dd id="completeTransaction"></dd></div><div><dt>Source</dt><dd id="completeSource"></dd></div></dl><p class="text-muted small mb-0">Inventory movements are linked to the recorded return if restock is selected.</p><button class="btn btn-outline-secondary mt-3" type="button" id="newReturnBottom">New return</button></aside></div></div></section>
+
+<!-- View the recorded return, not the original sales receipt. -->
+<div class="modal fade" id="returnReceiptModal" tabindex="-1" aria-labelledby="returnReceiptModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title fs-5 fw-bold" id="returnReceiptModalLabel">Return receipt</h2>
+          <p class="text-secondary small mb-0">Recorded merchandise return / refund</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3 gap-2">
+          <div>
+            <div class="text-secondary small">Return reference</div>
+            <div class="fs-4 fw-bold" id="returnReceiptRef">—</div>
+          </div>
+          <span class="badge text-bg-light">Recorded refund</span>
+        </div>
+        <dl class="row mb-0">
+          <dt class="col-sm-5 text-secondary fw-normal">Original sales receipt</dt><dd class="col-sm-7 fw-semibold" id="returnReceiptOriginal">—</dd>
+          <dt class="col-sm-5 text-secondary fw-normal">Date recorded</dt><dd class="col-sm-7" id="returnReceiptDate">—</dd>
+          <dt class="col-sm-5 text-secondary fw-normal">Customer</dt><dd class="col-sm-7" id="returnReceiptCustomer">—</dd>
+          <dt class="col-sm-5 text-secondary fw-normal">Returned product</dt><dd class="col-sm-7" id="returnReceiptProduct">—</dd>
+          <dt class="col-sm-5 text-secondary fw-normal">Quantity returned</dt><dd class="col-sm-7" id="returnReceiptQty">—</dd>
+          <dt class="col-sm-5 text-secondary fw-normal">Reason for return</dt><dd class="col-sm-7" id="returnReceiptReason" style="white-space:pre-wrap">—</dd>
+          <dt class="col-sm-5 text-secondary fw-normal">Condition / notes</dt><dd class="col-sm-7" id="returnReceiptNotes" style="white-space:pre-wrap">—</dd>
+          <dt class="col-sm-5 text-secondary fw-normal">Refund method</dt><dd class="col-sm-7" id="returnReceiptMethod">—</dd>
+          <dt class="col-sm-5 text-secondary fw-normal">Restocked</dt><dd class="col-sm-7" id="returnReceiptRestock">—</dd>
+          <dt class="col-sm-5 text-secondary fw-normal">Recorded by</dt><dd class="col-sm-7" id="returnReceiptOperator">—</dd>
+        </dl>
+        <div class="border-top mt-2 pt-3 d-flex justify-content-between align-items-center">
+          <strong>Refund amount</strong><strong class="fs-4" id="returnReceiptAmount">—</strong>
+        </div>
+        <p class="text-secondary small mt-3 mb-0">This receipt confirms a refund was recorded in RetailFlow; it does not independently verify a Cash or GCash transfer.</p>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button></div>
+    </div>
+  </div>
+</div>
 <p class="demo-note mt-4 mb-0">Receipt data is loaded from TiDB. Confirming a return saves the refund record and any selected restock.</p>
                 </section>
             </main>
