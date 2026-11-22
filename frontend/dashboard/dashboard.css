@@ -753,3 +753,198 @@ body[data-role="Owner"] .dashboard-content {
         animation: none;
     }
 }
+
+/* ==========================================
+   CCMC RETAILFLOW – PHONE-ONLY IMPROVEMENTS
+   Owner and future Staff mobile dashboards
+   Applied only below Bootstrap's 576px breakpoint.
+   Tablet and desktop styles above are untouched.
+   ========================================== */
+
+@media (max-width: 575.98px) {
+    /* Bootstrap Offcanvas retains its normal slide-in transition. */
+    .offcanvas.dashboard-sidebar {
+        min-height: 0;
+        height: 100dvh;
+        max-height: 100dvh;
+    }
+
+    .offcanvas.dashboard-sidebar .offcanvas-body {
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    .offcanvas.dashboard-sidebar .nav-link {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+        overflow-wrap: anywhere;
+    }
+
+    /* Compact header; hamburger remains touch-friendly. */
+    .dashboard-header {
+        padding: 14px 16px !important;
+    }
+
+    .dashboard-header > .d-flex {
+        flex-wrap: nowrap !important;
+        justify-content: flex-start !important;
+        gap: 12px;
+    }
+
+    .dashboard-header > .d-flex > .btn[data-bs-toggle="offcanvas"] {
+        flex: 0 0 44px;
+        width: 44px;
+        min-height: 44px;
+        padding: 6px;
+        font-size: 22px;
+        line-height: 1;
+    }
+
+    .dashboard-header > .d-flex > div {
+        min-width: 0;
+    }
+
+    .dashboard-header h5 {
+        font-size: 1rem;
+        line-height: 1.3;
+    }
+
+    .dashboard-header p {
+        font-size: 0.75rem;
+        overflow-wrap: anywhere;
+    }
+
+    /* Prevent content, charts, and tables from widening the page. */
+    .dashboard-main,
+    .dashboard-content,
+    .dashboard-content .card,
+    .dashboard-content .card-body {
+        min-width: 0;
+    }
+
+    .dashboard-content {
+        padding: 16px !important;
+    }
+
+    .dashboard-content h2 {
+        font-size: 1.4rem;
+        line-height: 1.25;
+    }
+
+    .dashboard-content > .d-flex {
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+
+    .dashboard-content > .d-flex > .d-flex {
+        max-width: 100%;
+    }
+
+    .dashboard-content > .d-flex .btn {
+        min-height: 40px;
+        white-space: normal;
+    }
+
+    /* Owner's four KPI cards: two columns on normal-sized phones. */
+    body[data-role="Owner"] .dashboard-content > .row > .col-12.col-sm-6.col-xl-3 {
+        flex: 0 0 auto;
+        width: 50%;
+    }
+
+    body[data-role="Owner"] .owner-stat-card {
+        min-height: 128px;
+    }
+
+    body[data-role="Owner"] .owner-stat-card .card-body,
+    .staff-stat-card .card-body,
+    .dashboard-stat-card .card-body {
+        padding: 12px !important;
+    }
+
+    body[data-role="Owner"] .owner-stat-card h3,
+    .staff-stat-card h3,
+    .dashboard-stat-card h3 {
+        font-size: clamp(1.15rem, 5vw, 1.5rem);
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+    }
+
+    body[data-role="Owner"] .owner-stat-card p,
+    .staff-stat-card p,
+    .dashboard-stat-card p {
+        font-size: 12px;
+        line-height: 1.35;
+    }
+
+    body[data-role="Owner"] .owner-stat-card small,
+    .staff-stat-card small,
+    .dashboard-stat-card small {
+        display: block;
+        font-size: 11px;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    /* Dashboard panels and financial totals. */
+    .dashboard-content-card .card-header,
+    .dashboard-content-card .card-body,
+    .staff-content-card .card-header,
+    .staff-content-card .card-body,
+    .owner-content-card .card-header,
+    .owner-content-card .card-body {
+        padding: 16px !important;
+    }
+
+    .dashboard-content-card h5,
+    .staff-content-card h5,
+    .owner-content-card h5 {
+        font-size: 1rem;
+    }
+
+    body[data-role="Owner"] #grossProfitToday,
+    body[data-role="Owner"] #refundsToday {
+        font-size: 1.4rem;
+        overflow-wrap: anywhere;
+    }
+
+    body[data-role="Owner"] #ownerInventoryAlerts {
+        padding: 12px;
+        overflow-wrap: anywhere;
+    }
+
+    /* Inline height in owner-dashboard.html needs !important to shrink. */
+    body[data-role="Owner"] #salesTrendChart {
+        min-height: 200px !important;
+        max-width: 100%;
+        padding: 8px;
+        overflow: hidden;
+    }
+
+    body[data-role="Owner"] #salesTrendChart svg,
+    body[data-role="Owner"] #salesTrendChart canvas {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Keep sales tables inside their scrollable container. */
+    .dashboard-content .table-responsive {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    body[data-role="Owner"] .dashboard-content .table-responsive .table {
+        min-width: 420px;
+    }
+}
+
+/* Very narrow phones get one KPI card per row for readability. */
+@media (max-width: 359.98px) {
+    body[data-role="Owner"] .dashboard-content > .row > .col-12.col-sm-6.col-xl-3 {
+        width: 100%;
+    }
+}

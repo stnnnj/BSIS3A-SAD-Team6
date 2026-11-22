@@ -26,6 +26,55 @@
 
     <body data-role="Staff">
 
+        <!-- =====================================
+             STAFF MOBILE-ONLY NAVIGATION
+             Visible below 576px. Tablet and desktop are unchanged.
+             ===================================== -->
+        <div
+            class="offcanvas offcanvas-start dashboard-sidebar d-sm-none"
+            tabindex="-1"
+            id="staffMobileMenu"
+            aria-labelledby="staffMobileMenuLabel"
+            style="--bs-offcanvas-width: min(85vw, 320px);">
+
+            <div class="offcanvas-header px-4 pt-4 pb-2">
+                <div>
+                    <h5 id="staffMobileMenuLabel" class="fw-bold text-white mb-1">
+                        CCMC RetailFlow
+                    </h5>
+                    <p class="sidebar-subtitle mb-0">RETAIL MANAGEMENT SYSTEM</p>
+                </div>
+
+                <button
+                    type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="offcanvas"
+                    aria-label="Close menu">
+                </button>
+            </div>
+
+            <div class="offcanvas-body d-flex flex-column px-4 pb-4">
+                <nav class="nav flex-column gap-2" aria-label="Staff mobile navigation">
+                    <a href="staff-dashboard.html" class="nav-link active" aria-current="page">
+                        Dashboard
+                    </a>
+                    <a href="inventory/inventory.html" class="nav-link">
+                        Inventory
+                    </a>
+                </nav>
+
+                <div class="sidebar-footer mt-auto pt-4">
+                    <p class="text-white mb-2">Signed in as Staff</p>
+                    <button
+                        type="button"
+                        id="staffMobileLogoutBtn"
+                        class="btn btn-outline-light w-100">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div class="container-fluid">
             <div class="row min-vh-100">
 
@@ -33,7 +82,7 @@
                 SIDEBAR
                 ===================================== -->
 
-                <aside class="col-md-3 col-lg-2 dashboard-sidebar p-4">
+                <aside class="col-md-3 col-lg-2 dashboard-sidebar p-4 d-none d-sm-flex">
 
                     <!-- BRANDING -->
                     <h4 class="fw-bold text-white mb-1">
@@ -111,6 +160,17 @@ MAIN CONTENT
         <div class="d-flex justify-content-between
         align-items-center flex-wrap gap-3">
 
+        <!-- Mobile menu toggle; hidden on tablet and desktop -->
+        <button
+            type="button"
+            class="btn btn-outline-secondary d-sm-none"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#staffMobileMenu"
+            aria-controls="staffMobileMenu"
+            aria-label="Open staff menu">
+            <span aria-hidden="true">&#9776;</span>
+        </button>
+
         <div>
             <h5 class="fw-bold mb-1">
                 Staff Dashboard
@@ -121,7 +181,7 @@ MAIN CONTENT
             </p>
         </div>
 
-        <span class="badge text-bg-light">
+        <span class="badge text-bg-light d-none d-sm-inline-block">
             Staff Workspace
         </span>
 
@@ -165,7 +225,7 @@ STAFF DASHBOARD CONTENT
     <!-- EXISTING NEW SALE BUTTON -->
     <a
     href="sales/sales.html"
-    class="btn btn-primary">
+    class="btn btn-primary d-none d-sm-inline-block">
     + New Sale
 </a>
 
@@ -320,7 +380,7 @@ RECENT SALES AND ALERTS
 
             <a
             href="sales/sales.html"
-            class="btn btn-primary btn-sm">
+            class="btn btn-primary btn-sm d-none d-sm-inline-block">
             Open POS
         </a>
 
@@ -384,13 +444,13 @@ role="note">
 
     <a
     href="reservations/reservations.html"
-    class="btn btn-outline-secondary">
+    class="btn btn-outline-secondary d-none d-sm-inline-block">
     New Reservation
 </a>
 
 <a
 href="returns/returns.html"
-class="btn btn-outline-secondary">
+class="btn btn-outline-secondary d-none d-sm-inline-block">
 Return / Refund
 </a>
 
@@ -432,7 +492,7 @@ Return / Refund
 
             <a
             href="reservations/reservations.html"
-            class="btn btn-outline-secondary btn-sm">
+            class="btn btn-outline-secondary btn-sm d-none d-sm-inline-block">
             View Reservations
         </a>
 
@@ -489,6 +549,13 @@ src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.j
 
     <!-- Staff Dashboard JavaScript -->
 <script src="dashboard/staff-dashboard.js"></script>
+
+<!-- Reuse the original logout handler; no duplicate IDs or API calls. -->
+<script>
+    document.getElementById("staffMobileLogoutBtn").addEventListener("click", function () {
+        document.getElementById("logoutBtn").click();
+    });
+</script>
 
 </body>
 </html>
