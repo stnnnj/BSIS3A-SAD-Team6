@@ -948,3 +948,136 @@ body[data-role="Owner"] .dashboard-content {
         width: 100%;
     }
 }
+
+/* ==========================================
+   CCMC RETAILFLOW – STAFF DASHBOARD MOBILE
+   Matches the Owner Dashboard phone layout.
+   The staff and owner dashboards share THIS stylesheet.
+   Only applies below 576px; tablet/desktop are unchanged.
+   ========================================== */
+
+@media (max-width: 575.98px) {
+    /* Four Staff KPI cards: same two-column phone layout as Owner. */
+    body[data-role="Staff"]:not([data-module]) .dashboard-content > .row.g-4 {
+        --bs-gutter-x: 0.75rem;
+        --bs-gutter-y: 0.75rem;
+    }
+
+    body[data-role="Staff"]:not([data-module])
+    .dashboard-content > .row > .col-12.col-sm-6.col-xl-3 {
+        flex: 0 0 auto;
+        width: 50%;
+        min-width: 0;
+    }
+
+    body[data-role="Staff"]:not([data-module]) .staff-stat-card {
+        min-height: 128px;
+        width: 100%;
+    }
+
+    body[data-role="Staff"]:not([data-module]) .staff-stat-card .card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-width: 0;
+        padding: 12px !important;
+    }
+
+    body[data-role="Staff"]:not([data-module]) .staff-stat-card h3 {
+        font-size: clamp(1.15rem, 5vw, 1.5rem);
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+    }
+
+    body[data-role="Staff"]:not([data-module]) .staff-stat-card p {
+        font-size: 12px;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    body[data-role="Staff"]:not([data-module]) .staff-stat-card small {
+        display: block;
+        font-size: 11px;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }
+
+    /* Keep the dashboard heading and Refresh control comfortable on phones. */
+    body[data-role="Staff"]:not([data-module])
+    .dashboard-content > .d-flex:first-child {
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+
+    body[data-role="Staff"]:not([data-module])
+    .dashboard-content > .d-flex:first-child > div {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    body[data-role="Staff"]:not([data-module]) #refreshDashboardBtn {
+        min-height: 44px;
+    }
+
+    /* Recent Sales and Needs Your Attention: Owner-like panel spacing. */
+    body[data-role="Staff"]:not([data-module]) .staff-content-card {
+        min-width: 0;
+    }
+
+    body[data-role="Staff"]:not([data-module]) .staff-content-card .card-header,
+    body[data-role="Staff"]:not([data-module]) .staff-content-card .card-body {
+        min-width: 0;
+        padding: 16px !important;
+    }
+
+    body[data-role="Staff"]:not([data-module]) .staff-content-card h5,
+    body[data-role="Staff"]:not([data-module]) .staff-content-card h6 {
+        font-size: 1rem;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    /* Table scrolls inside its card, not across the entire phone page. */
+    body[data-role="Staff"]:not([data-module])
+    .staff-content-card .table-responsive {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    body[data-role="Staff"]:not([data-module])
+    .staff-content-card .table-responsive .table {
+        min-width: 420px;
+    }
+
+    /* Preserve and compact the reservation, stock, and unfinished-sale notices. */
+    body[data-role="Staff"]:not([data-module]) #reservationAlerts,
+    body[data-role="Staff"]:not([data-module]) #inventoryAlerts {
+        padding: 12px;
+        overflow-wrap: anywhere;
+    }
+
+    body[data-role="Staff"]:not([data-module])
+    .staff-content-card .alert {
+        padding: 12px;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        overflow-wrap: anywhere;
+    }
+
+    /* Keep Staff's mobile Offcanvas links consistent with the dashboards. */
+    body[data-role="Staff"]:not([data-module])
+    #staffMobileMenu .nav-link {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+    }
+}
+
+/* Very narrow phones use one card per row, matching the Owner rules. */
+@media (max-width: 359.98px) {
+    body[data-role="Staff"]:not([data-module])
+    .dashboard-content > .row > .col-12.col-sm-6.col-xl-3 {
+        width: 100%;
+    }
+}
