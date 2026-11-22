@@ -1,4 +1,4 @@
-/* CCMC RetailFlow — owner module theme lock.
+/* CCMC RetailFlow — shared Owner/Staff inventory theme lock.
    This file owns THIS module's presentation; the existing dashboard and
    buttons stylesheets provide the original palette and global effects. */
 :root {
@@ -9,7 +9,6 @@
   --rf-muted: #6c7c8d;
   --rf-line: #e4ebef;
 }
-
 .rf-content {
   max-width: 1580px;
   margin: 0 auto;
@@ -233,15 +232,6 @@
   }
 }
 @media (max-width: 767.98px) {
-  .rf-sidebar {
-    position: relative;
-    min-height: auto;
-    height: auto;
-  }
-  .rf-sidebar nav {
-    max-height: 270px;
-    overflow: auto;
-  }
   .rf-stat {
     min-height: 130px;
   }
@@ -287,21 +277,7 @@
   font-weight: 600;
 }
 
-/* KEEP ORIGINAL OWNER DASHBOARD SIDEBAR */
+/* Preserve the original dashboard sidebar; do not override nav font, height or width. */
 
-@media (min-width: 992px) {
-  .dashboard-sidebar {
-    flex: 0 0 auto;
-    width: 16.666667%;
-    min-width: 0;
-  }
-}
-
-.dashboard-sidebar .nav-link {
-  font-size: 16px;
-  text-decoration: none;
-}
-
-.dashboard-sidebar .nav-link:hover {
-  text-decoration: none;
-}
+/* Keep the shared Inventory sidebar identical to the original dashboard.
+   dashboard.css owns width, font size, gradient and footer placement. */

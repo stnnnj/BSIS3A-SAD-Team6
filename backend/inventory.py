@@ -1,4 +1,4 @@
-"""Owner Inventory: stock viewing, history, and auditable manual adjustments.
+"""Shared Inventory: Staff/Owner viewing; Owner-only manual adjustments.
 
 Register this module once in backend/app.py:
     from inventory import inventory_bp
@@ -24,6 +24,18 @@ def owner_only(func):
             return jsonify(success=False, message="Please sign in."), 401
         if session.get("role") != "Owner":
             return jsonify(success=False, message="Owner access required."), 403
+        return func(*args, **kwargs)
+    return wrapper
+
+
+def inventory_reader(func):
+    """Both authenticated roles can view stock and movement history."""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if "user_id" not in session:
+            return jsonify(success=False, message="Please sign in."), 401
+        if session.get("role") not in ("Owner", "Staff"):
+            return jsonify(success=False, message="Inventory access denied."), 403
         return func(*args, **kwargs)
     return wrapper
 
@@ -72,8 +84,9 @@ def prevent_cache(response):
     return response
 
 
-@inventory_bp.get("/api/owner/inventory/overview")
-@owner_only
+@inventory_bp.get("/api/inventory/overview")
+@inventory_bp.get("/api/owner/inventory/overview")  # Compatibility with existing Owner links
+@inventory_reader
 def inventory_overview():
     """Current stock, thresholds and reference product details."""
     try:
@@ -102,8 +115,9 @@ def inventory_overview():
         return fail("Unable to load inventory. Check your database connection.", 503)
 
 
-@inventory_bp.get("/api/owner/inventory/transactions")
-@owner_only
+@inventory_bp.get("/api/inventory/transactions")
+@inventory_bp.get("/api/owner/inventory/transactions")  # Compatibility with existing Owner links
+@inventory_reader
 def inventory_transactions():
     try:
         raw_limit = request.args.get("limit", "50")
