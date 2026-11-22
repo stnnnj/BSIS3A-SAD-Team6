@@ -1,0 +1,3 @@
+
+# Preserve existing CCMC RetailFlow frontend URLs
+/frontend/*    /:splat    200
