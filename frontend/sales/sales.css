@@ -19,3 +19,84 @@ body { font-family: "Segoe UI", Arial, sans-serif; background: var(--off-white);
 .dashboard-sidebar .nav-link { font-size: 1rem; }
 .dashboard-sidebar .nav-link.active { border-left-color: var(--teal); }
 @media (max-width: 767.98px) { .dashboard-sidebar { min-height: auto; } }
+
+/* Receipt screen: a compact thermal-roll style, without changing the POS shell. */
+#receiptContent.rf-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: #eef2f5;
+  padding: 25px 15px;
+}
+.rf-receipt-paper {
+  width: 100%;
+  max-width: 340px;
+  padding: 24px 21px;
+  background: #fff;
+  color: #111;
+  border: 1px solid #d9dfe3;
+  border-radius: 2px;
+  box-shadow: 0 12px 28px rgba(24, 41, 55, .12);
+  font: 12px/1.5 'Courier New', Consolas, monospace;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.rf-receipt-header, .rf-receipt-footer { text-align: center; }
+.rf-receipt-store { font: 800 19px/1.18 'Courier New', Consolas, monospace; letter-spacing: -.05em; }
+.rf-receipt-store-details { font-size: 11px; margin-top: 5px; }
+.rf-receipt-document { font-size: 12px; margin-top: 11px; font-weight: 800; letter-spacing: .13em; }
+.rf-receipt-divider { border-top: 1px dashed #444; margin: 12px 0; }
+.rf-receipt-meta, .rf-receipt-totals { display: grid; gap: 5px; }
+.rf-receipt-line, .rf-receipt-item-heading, .rf-receipt-item-values {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 9px;
+}
+.rf-receipt-line > span, .rf-receipt-item-values > span { flex: 0 1 auto; min-width: 0; }
+.rf-receipt-line > strong, .rf-receipt-item-values > strong {
+  flex: 0 0 auto; text-align: right; font-weight: 700;
+}
+.rf-receipt-meta .rf-receipt-line { align-items: flex-start; }
+.rf-receipt-meta .rf-receipt-line strong { flex: 0 1 64%; }
+.rf-receipt-item-heading { font-weight: 700; font-size: 11px; letter-spacing: .05em; }
+.rf-receipt-item { margin-top: 12px; break-inside: avoid; page-break-inside: avoid; }
+.rf-receipt-product { font-weight: 700; }
+.rf-receipt-sku { font-size: 11px; color: #555; }
+.rf-receipt-item-values { margin-top: 2px; }
+.rf-receipt-grand-total {
+  margin: 8px 0 7px;
+  border-top: 1px solid #111;
+  padding-top: 8px;
+  font-size: 15px;
+  font-weight: 800;
+}
+.rf-receipt-footer { display: grid; gap: 4px; padding-top: 4px; }
+.rf-receipt-footer strong { font-weight: 800; }
+.rf-receipt-footer span { font-size: 10px; }
+/* Keep the printing copy separate from the interactive POS view. */
+#receiptPrintRoot { display: none; }
+@media print {
+  @page { size: auto; margin: 0; }
+  html, body { background: white !important; margin: 0 !important; padding: 0 !important; }
+  body > *:not(#receiptPrintRoot) { display: none !important; }
+  #receiptPrintRoot {
+    display: block !important;
+    box-sizing: border-box;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  #receiptPrintRoot .rf-receipt-paper {
+    box-sizing: border-box;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    padding: 4mm 5mm 8mm !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    color: black !important;
+    background: white !important;
+    font-size: 10pt !important;
+  }
+  #receiptPrintRoot .rf-receipt-divider { border-color: black !important; }
+}
