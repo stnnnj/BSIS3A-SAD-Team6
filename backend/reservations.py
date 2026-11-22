@@ -17,6 +17,7 @@ from datetime import date, datetime, timezone
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from functools import wraps
 from uuid import uuid4
+import re
 from datetime import timedelta
 
 from flask import jsonify, session
@@ -40,6 +41,23 @@ def money(value):
         return value.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
     except (InvalidOperation, ValueError, TypeError):
         fail("Invalid currency amount.")
+
+
+def reservation_down_payment(value):
+    """Validate exact peso cents before creating a reservation.
+
+    Unlike the general money() helper, this must reject missing or malformed
+    input rather than silently rounding invalid down payments.
+    """
+    if isinstance(value, bool) or not isinstance(value, (int, float, str, Decimal)):
+        fail("Enter a valid down payment in pesos (0 to the reservation total).")
+    raw = str(value).strip()
+    if not re.fullmatch(r"\d+(?:\.\d{1,2})?", raw):
+        fail("Down payment must be non-negative and have at most 2 decimal places.")
+    amount = money(raw)
+    if amount > Decimal("99999999.99"):
+        fail("Down payment exceeds the maximum supported amount.")
+    return amount
 
 
 def today_ph():
@@ -285,7 +303,7 @@ def reservation_create():
         fail("Customer name is required (100 characters maximum); contact number is 20 characters maximum.")
     expiry = parse_expiry(data.get("expiry_date"))
     quantities = parse_items(data.get("items"))
-    down_payment = money(data.get("down_payment", 0))
+    down_payment = reservation_down_payment(data.get("down_payment"))
     payment_method = data.get("payment_method")
     gcash_reference = str(data.get("gcash_reference") or "").strip()
     if payment_method not in ("Cash", "GCash") or down_payment < 0:
