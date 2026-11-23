@@ -73,7 +73,16 @@ def summary():
                 WHERE status = 'Completed'
                 ORDER BY payment_method
             """)
-            payments = [r["payment_method"] for r in cursor.fetchall()]
+            recorded_payments = [
+                r["payment_method"] for r in cursor.fetchall()
+                if r["payment_method"]
+            ]
+            # Show supported checkout methods even when there are no
+            # matching completed sales yet. Never create sample records.
+            payments = ["Cash", "GCash"] + [
+                method for method in recorded_payments
+                if method not in ("Cash", "GCash")
+            ]
 
             sale_where = ["s.status = 'Completed'"]
             sale_args = []
