@@ -358,3 +358,226 @@
 .dashboard-sidebar .nav-link:hover {
   text-decoration: none;
 }
+
+
+/* ==============================================================
+   CCMC RETAILFLOW — OWNER REPORTS PHONE-ONLY RESPONSIVENESS
+   Mobile only: under 576px. All previous CSS is kept unchanged.
+   Tablet and desktop retain the original layout and styles.
+   ============================================================== */
+@media (max-width: 575.98px) {
+  /* The sidebar and hamburger use the Owner Dashboard's shared CSS.
+     These rules style only the Reports page's mobile content. */
+  body[data-module="reports"] .dashboard-main,
+  body[data-module="reports"] .rf-content,
+  body[data-module="reports"] .rf-card {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  body[data-module="reports"] .rf-content {
+    padding: 16px 16px 32px !important;
+  }
+
+  /* Compact heading; keep both Refresh and Export CSV available. */
+  body[data-module="reports"] .rf-heading {
+    margin: 0 0 16px;
+    gap: 12px !important;
+  }
+
+  body[data-module="reports"] .rf-heading > div:first-child,
+  body[data-module="reports"] .rf-heading > .d-flex {
+    min-width: 0;
+    width: 100%;
+  }
+
+  body[data-module="reports"] .rf-heading h2 {
+    font-size: 1.5rem;
+    line-height: 1.25;
+  }
+
+  body[data-module="reports"] .rf-heading p {
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+
+  body[data-module="reports"] .rf-heading > .d-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px !important;
+  }
+
+  body[data-module="reports"] .rf-heading > .d-flex > .btn {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 0;
+    min-height: 44px;
+    padding: 9px 10px;
+    font-size: 0.85rem;
+    white-space: normal;
+  }
+
+  /* Full-width mobile report filters and touch-friendly date fields. */
+  body[data-module="reports"] .rf-filter-panel {
+    padding: 16px;
+  }
+
+  body[data-module="reports"] #reportForm > div {
+    min-width: 0;
+  }
+
+  body[data-module="reports"] #reportForm .form-control,
+  body[data-module="reports"] #reportForm .form-select {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    font-size: 1rem;
+  }
+
+  body[data-module="reports"] #generateBtn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  /* Four KPIs: two columns at normal phone widths. */
+  body[data-module="reports"] .rf-content > .row.g-3.mt-2 > .col-6 {
+    flex: 0 0 auto;
+    width: 50%;
+    min-width: 0;
+  }
+
+  body[data-module="reports"] .rf-stat {
+    min-height: 124px;
+    height: 100%;
+    padding: 14px 12px;
+  }
+
+  body[data-module="reports"] .rf-stat-label {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  body[data-module="reports"] .rf-stat-number {
+    font-size: clamp(1.15rem, 5vw, 1.55rem);
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  body[data-module="reports"] .rf-stat-note {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  /* Compact report sections while retaining the original card theme. */
+  body[data-module="reports"] .rf-card-heading {
+    padding: 16px 16px 12px;
+    gap: 10px;
+  }
+
+  body[data-module="reports"] .rf-card-heading > div {
+    min-width: 0;
+  }
+
+  body[data-module="reports"] .rf-card-heading h3 {
+    font-size: 1rem;
+  }
+
+  body[data-module="reports"] .rf-card-heading p {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  body[data-module="reports"] .rf-count {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+
+  /* Keep the original navy-to-teal bars and growth animation.
+     Narrow chart slots scroll horizontally rather than overflow the page. */
+  body[data-module="reports"] .rf-chart {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 170px;
+    gap: 10px;
+    padding: 12px 14px 20px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  body[data-module="reports"] .rf-bar-slot {
+    flex: 0 0 52px;
+    min-width: 52px;
+    min-height: 132px;
+  }
+
+  body[data-module="reports"] .rf-bar {
+    width: min(44px, 92%);
+  }
+
+  body[data-module="reports"] .rf-bar-amount {
+    font-size: 10px;
+  }
+
+  body[data-module="reports"] .rf-bar-date {
+    font-size: 9px;
+  }
+
+  /* Search takes the full mobile width. */
+  body[data-module="reports"] .rf-table-tools {
+    padding: 6px 16px 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  body[data-module="reports"] .rf-table-tools input {
+    display: block;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    min-height: 44px;
+    font-size: 1rem;
+  }
+
+  /* Allow wide report columns to scroll within their card, not the page. */
+  body[data-module="reports"] .rf-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+
+  body[data-module="reports"] .rf-table-wrap .table {
+    min-width: 560px;
+  }
+
+  body[data-module="reports"] .rf-table-wrap .table thead th,
+  body[data-module="reports"] .rf-table-wrap .table td {
+    padding: 12px 13px;
+    font-size: 12px;
+  }
+
+  body[data-module="reports"] .rf-empty {
+    padding: 22px 12px !important;
+  }
+
+  /* Notice messages should wrap instead of widening the page. */
+  body[data-module="reports"] .rf-notice,
+  body[data-module="reports"] #filterNote,
+  body[data-module="reports"] #truncationNotice {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Very narrow phones: one KPI per row for legibility. */
+@media (max-width: 359.98px) {
+  body[data-module="reports"] .rf-content > .row.g-3.mt-2 > .col-6 {
+    width: 100%;
+  }
+}

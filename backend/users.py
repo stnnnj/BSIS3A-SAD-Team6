@@ -87,14 +87,16 @@ def owner_required(function):
             "POST", "PUT", "PATCH", "DELETE"
         )
 
-        # Same-origin protection for account changes.
+        # Trusted-origin protection for account changes.
+        # Includes the deployed Netlify frontend.
         if is_write:
 
-            expected_origin = (
-                request.host_url.rstrip("/")
+            trusted_origins = (
+                request.host_url.rstrip("/"),
+                "https://ccmc-retailflow.netlify.app"
             )
 
-            if request.headers.get("Origin") != expected_origin:
+            if request.headers.get("Origin") not in trusted_origins:
 
                 return error_response(
                     "Invalid request origin.", 403

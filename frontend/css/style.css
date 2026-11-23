@@ -469,3 +469,344 @@ section.bg-dark h1 + p + div {
                             border-radius: 18px;
                         }
                     }
+
+/* ==========================================
+   CCMC RETAILFLOW – PHONE-ONLY LOGIN IMPROVEMENTS
+   These additions affect only widths below 576px.
+   All existing tablet/desktop rules above are preserved.
+   ========================================== */
+
+@media (max-width: 575.98px) {
+    /* Short branding banner, retaining the original navy gradient and glow. */
+    section.bg-dark {
+        min-height: 0;
+        padding: 20px 18px !important;
+        justify-content: center;
+    }
+
+    section.bg-dark h4 {
+        font-size: 1.125rem;
+        line-height: 1.3;
+        letter-spacing: 0.2px;
+    }
+
+    section.bg-dark > p.d-sm-none {
+        font-size: 0.75rem;
+        line-height: 1.4;
+        color: #AABACB !important;
+    }
+
+    /* More compact decorative glows, without changing their palette. */
+    section.bg-dark::before {
+        width: 240px;
+        height: 240px;
+        top: -130px;
+        right: -110px;
+    }
+
+    section.bg-dark::after {
+        width: 220px;
+        height: 220px;
+        bottom: -150px;
+        left: -110px;
+    }
+
+    /* Put the actual login controls near the top on phones. */
+    section.bg-white {
+        min-height: 0;
+        padding: 16px 14px 24px !important;
+        align-items: flex-start;
+    }
+
+    /* Preserve the original glassmorphism, with phone-friendly proportions. */
+    section.bg-white > .mx-auto {
+        width: 100%;
+        min-width: 0;
+        max-width: 470px !important;
+        padding: 24px 18px;
+        border-radius: 18px;
+    }
+
+    section.bg-white h2 {
+        font-size: clamp(1.45rem, 6vw, 1.75rem);
+        line-height: 1.2;
+        letter-spacing: -0.5px;
+        overflow-wrap: anywhere;
+    }
+
+    section.bg-white .text-secondary {
+        line-height: 1.5;
+    }
+
+    /* Role selection stays full-width, with easy-to-tap buttons. */
+    #roleSelection .d-grid {
+        margin-top: 1.25rem !important;
+        gap: 12px !important;
+    }
+
+    #roleSelection .btn,
+    #signInBtn,
+    #backToRoleBtn {
+        min-height: 48px;
+        font-size: 1rem;
+        white-space: normal;
+    }
+
+    #roleSelection .btn {
+        width: 100%;
+    }
+
+    /* iOS-friendly input text size avoids zooming when a field receives focus. */
+    #loginForm .form-control {
+        display: block;
+        width: 100%;
+        min-height: 48px;
+        font-size: 16px;
+        padding: 12px 14px;
+    }
+
+    #loginForm .form-label {
+        font-size: 0.875rem;
+    }
+
+    #signInBtn,
+    #backToRoleBtn {
+        width: 100%;
+    }
+
+    #backToRoleBtn {
+        margin-top: 12px !important;
+    }
+
+    #loginError {
+        overflow-wrap: anywhere;
+        font-size: 0.875rem;
+        padding: 12px 14px;
+    }
+
+    /* Condense supporting copy without hiding help or account information. */
+    section.bg-white > .mx-auto > p.text-secondary.small.mt-5 {
+        margin-top: 24px !important;
+        font-size: 0.8125rem;
+    }
+
+    section.bg-white hr {
+        margin: 14px 0;
+    }
+
+    section.bg-white h6.mt-4 {
+        margin-top: 16px !important;
+    }
+
+    section.bg-white > .mx-auto > p.text-secondary.small:last-child {
+        margin-bottom: 0;
+    }
+}
+
+
+/* ==========================================
+   CCMC RETAILFLOW — APPROVED MOBILE LOGIN LOOK
+   Blue desktop-brand gradient + frosted white glass.
+   Phones only: desktop/tablet rules above remain intact.
+   ========================================== */
+@media (max-width: 575.98px) {
+    html,
+    body {
+        background: #080f18;
+    }
+
+    /* One continuous navy gradient behind branding and glass card. */
+    main.container-fluid {
+        max-width: 100%;
+        overflow-x: clip;
+    }
+
+    main.container-fluid > .row {
+        margin-left: 0;
+        margin-right: 0;
+        min-height: 100svh;
+        align-content: start;
+        background:
+            radial-gradient(ellipse at 94% 29%, rgba(42,157,143,0.16), transparent 44%),
+            linear-gradient(145deg, #0B1320 0%, #142740 46%, #1F3A5F 100%);
+    }
+
+    /* Brand header is small, flush with the continuous page background. */
+    section.bg-dark {
+        padding: 28px 28px 16px !important;
+        min-height: 0;
+        background: transparent !important;
+        align-items: flex-start;
+        justify-content: flex-start;
+        overflow: hidden;
+    }
+
+    section.bg-dark h4 {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.3;
+        color: #fff;
+    }
+
+    section.bg-dark > p.d-sm-none {
+        margin-top: 4px !important;
+        color: #D6E0EA !important;
+        font-size: 0.75rem;
+        line-height: 1.4;
+    }
+
+    /* Remove the previous light panel on phones only. */
+    section.bg-white {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        overflow: visible;
+        min-height: 0;
+        padding: 0 16px 22px !important;
+        background: transparent !important;
+    }
+
+    section.bg-white::before {
+        top: -50px;
+        right: -90px;
+        width: 250px;
+        height: 250px;
+        background: rgba(42,157,143,0.14);
+        filter: blur(48px);
+        z-index: 0;
+    }
+
+    /* The role selector and login form share the same frosted-glass card. */
+    section.bg-white > .mx-auto {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 470px !important;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 20px 15px 18px;
+        background: rgba(245,249,252,0.88);
+        border: 1px solid rgba(255,255,255,0.92);
+        border-radius: 18px;
+        -webkit-backdrop-filter: blur(22px) saturate(145%);
+        backdrop-filter: blur(22px) saturate(145%);
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.95),
+            0 14px 32px rgba(3,13,25,0.24),
+            0 3px 10px rgba(3,13,25,0.08);
+    }
+
+    section.bg-white h2 {
+        font-size: clamp(1.35rem, 6vw, 1.65rem);
+        font-weight: 700;
+        line-height: 1.22;
+        letter-spacing: -0.45px;
+        color: #0B1320;
+    }
+
+    section.bg-white .text-secondary {
+        color: #617083 !important;
+        line-height: 1.45;
+    }
+
+    #roleSelection > p.text-secondary,
+    #loginSection > p.text-secondary.mb-4 {
+        font-size: 0.82rem;
+        margin-bottom: 8px !important;
+    }
+
+    /* Refined gold-to-teal line below Welcome back. */
+    .login-mobile-gradient {
+        width: 82px;
+        height: 3px;
+        margin: 8px 0 14px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #FFB703 0%, #2A9D8F 100%);
+    }
+
+    /* Match the dark rounded buttons in the screenshot. */
+    #roleSelection .d-grid {
+        margin-top: 12px !important;
+        gap: 10px !important;
+    }
+
+    #staffRoleBtn,
+    #ownerRoleBtn {
+        width: 100%;
+        min-height: 46px;
+        padding: 10px 16px;
+        border-radius: 11px;
+        background: #153C5C;
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 2px 5px rgba(11,19,32,0.06);
+        font-size: 0.91rem;
+        font-weight: 600;
+        color: #fff;
+    }
+
+    #staffRoleBtn:hover,
+    #ownerRoleBtn:hover,
+    #staffRoleBtn:focus-visible,
+    #ownerRoleBtn:focus-visible {
+        background: #1F3A5F;
+        border-color: rgba(42,157,143,0.48);
+    }
+
+    /* Keep the form comfortable and accessible when a role is selected. */
+    #loginForm .form-control {
+        min-height: 46px;
+        width: 100%;
+        font-size: 16px;
+    }
+
+    #signInBtn,
+    #backToRoleBtn {
+        width: 100%;
+        min-height: 46px;
+        border-radius: 11px;
+    }
+
+    #loginError {
+        overflow-wrap: anywhere;
+    }
+
+    /* Quiet support information, without tall empty gaps. */
+    section.bg-white > .mx-auto > p.text-secondary.small.mt-5 {
+        margin-top: 18px !important;
+        margin-bottom: 14px;
+        font-size: 0.73rem;
+        line-height: 1.35;
+    }
+
+    section.bg-white hr {
+        margin: 12px 0 17px;
+        border-color: #D2DBE3;
+        opacity: 0.8;
+    }
+
+    section.bg-white h6.mt-4 {
+        margin: 0 0 8px !important;
+        font-size: 0.9rem;
+    }
+
+    section.bg-white > .mx-auto > p.text-secondary.small:last-child {
+        font-size: 0.73rem;
+        line-height: 1.45;
+        margin-bottom: 0;
+    }
+
+    /* Long gold-to-teal line beneath the glass card. */
+    .login-mobile-bottom-gradient {
+        position: relative;
+        z-index: 1;
+        width: calc(100% - 24px);
+        max-width: 446px;
+        flex: 0 0 3px;
+        height: 3px;
+        margin: 12px auto 0;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #FFB703 0%, #2A9D8F 100%);
+    }
+}

@@ -1,0 +1,5 @@
+# Forward API requests to the Flask backend on Render
+/api/*    https://bsis3a-sad-team6.onrender.com/api/:splat    200
+
+# Preserve existing frontend URLs
+/frontend/*    /:splat    200

@@ -13,11 +13,71 @@
     <link rel="stylesheet" href="/frontend/css/buttons.css" />
     <!-- This module's OWN stylesheet -->
     <link rel="stylesheet" href="/frontend/inventory/inventory.css" />
+    <!-- Mobile-only behavior: existing tablet/desktop styles are not changed. -->
+    <style>
+      @media (max-width: 575.98px) {
+        /* Mobile is for inventory viewing; Owner editing stays available on tablet/desktop. */
+        #openAdjustmentBtn,
+        #adjustmentActionHeading,
+        .rf-adjust-row {
+          display: none !important;
+        }
+      }
+
+      @media (max-width: 359.98px) {
+        /* Avoid cramped inventory statistics on very narrow phones. */
+        #inventoryStats > .col-6 {
+          width: 100%;
+        }
+      }
+    </style>
   </head>
   <body data-module="inventory" style="visibility: hidden">
+    <!-- Mobile navigation: identical Bootstrap Offcanvas pattern used on dashboards. -->
+    <div
+      class="offcanvas offcanvas-start dashboard-sidebar d-sm-none"
+      tabindex="-1"
+      id="inventoryMobileMenu"
+      aria-labelledby="inventoryMobileMenuLabel"
+      style="--bs-offcanvas-width: min(85vw, 320px);"
+    >
+      <div class="offcanvas-header px-4 pt-4 pb-2">
+        <div>
+          <h5 id="inventoryMobileMenuLabel" class="fw-bold text-white mb-1">
+            CCMC RetailFlow
+          </h5>
+          <p class="sidebar-subtitle mb-0">RETAIL MANAGEMENT SYSTEM</p>
+        </div>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="offcanvas"
+          aria-label="Close menu"
+        ></button>
+      </div>
+      <div class="offcanvas-body d-flex flex-column px-4 pb-4">
+        <!-- Links are copied from the authenticated role-based desktop nav. -->
+        <nav
+          id="inventoryMobileNav"
+          class="nav flex-column gap-2"
+          aria-label="Inventory mobile navigation"
+        ></nav>
+        <div class="sidebar-footer mt-auto pt-4">
+          <p id="inventoryMobileSignedInLabel" class="text-white mb-2">Signed in</p>
+          <button
+            id="inventoryMobileLogoutBtn"
+            type="button"
+            class="btn btn-outline-light w-100"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="container-fluid">
       <div class="row min-vh-100">
-        <aside class="col-md-3 col-lg-2 dashboard-sidebar p-4">
+        <aside class="col-md-3 col-lg-2 dashboard-sidebar p-4 d-none d-sm-flex">
           <h4 class="fw-bold text-white mb-1">CCMC RetailFlow</h4>
           <p class="sidebar-subtitle mb-5">RETAIL MANAGEMENT SYSTEM</p>
           <!-- Populated from authenticated Owner/Staff role by inventory.js.
@@ -43,11 +103,22 @@
             <div
               class="d-flex justify-content-between align-items-center gap-3 flex-wrap"
             >
+              <!-- Visible on phones only; tablet/desktop header remains unchanged. -->
+              <button
+                type="button"
+                class="btn btn-outline-secondary d-sm-none"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#inventoryMobileMenu"
+                aria-controls="inventoryMobileMenu"
+                aria-label="Open inventory menu"
+              >
+                <span aria-hidden="true">&#9776;</span>
+              </button>
               <div>
                 <h5 class="fw-bold mb-1">Inventory</h5>
                 <p class="text-secondary mb-0">CCMC RetailFlow / Inventory</p>
               </div>
-              <span id="workspaceBadge" class="badge text-bg-light"
+              <span id="workspaceBadge" class="badge text-bg-light d-none d-sm-inline-block"
                 >Workspace</span
               >
             </div>
@@ -92,28 +163,28 @@
               id="inventoryStats"
               aria-label="Inventory statistics"
             >
-              <div class="col-sm-6 col-xl-3">
+              <div class="col-6 col-sm-6 col-xl-3">
                 <article class="rf-card rf-stat">
                   <div class="rf-stat-label">Total Products</div>
                   <strong id="statProducts" class="rf-stat-number">—</strong
                   ><span class="rf-stat-note">Listed product types</span>
                 </article>
               </div>
-              <div class="col-sm-6 col-xl-3">
+              <div class="col-6 col-sm-6 col-xl-3">
                 <article class="rf-card rf-stat">
                   <div class="rf-stat-label">Stock Units</div>
                   <strong id="statUnits" class="rf-stat-number">—</strong
                   ><span class="rf-stat-note">All units on hand</span>
                 </article>
               </div>
-              <div class="col-sm-6 col-xl-3">
+              <div class="col-6 col-sm-6 col-xl-3">
                 <article class="rf-card rf-stat">
                   <div class="rf-stat-label">Low Stock</div>
                   <strong id="statLow" class="rf-stat-number">—</strong
                   ><span class="rf-stat-note">At or below minimum</span>
                 </article>
               </div>
-              <div class="col-sm-6 col-xl-3">
+              <div class="col-6 col-sm-6 col-xl-3">
                 <article class="rf-card rf-stat">
                   <div class="rf-stat-label">Out of Stock</div>
                   <strong id="statOut" class="rf-stat-number">—</strong
@@ -315,5 +386,44 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- This module's OWN JavaScript; no shared owner-modules.js required -->
     <script src="/frontend/inventory/inventory.js" defer></script>
+
+    <!-- Mobile navigation mirrors inventory.js's verified Owner/Staff links. -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const desktopNav = document.getElementById("inventoryNav");
+        const mobileNav = document.getElementById("inventoryMobileNav");
+        const mobileSignedIn = document.getElementById("inventoryMobileSignedInLabel");
+        const signedIn = document.getElementById("signedInLabel");
+        const allowedLabels = new Set([
+          "Dashboard",
+          "Inventory",
+          "Financial Analytics",
+          "Reports"
+        ]);
+
+        function syncMobileNavigation() {
+          // inventory.js populates desktop navigation after /api/auth/me.
+          // Using those confirmed links avoids guessing the account role.
+          const permittedLinks = Array.from(desktopNav.querySelectorAll("a[href]"))
+            .filter((link) => allowedLabels.has(link.textContent.trim()))
+            .map((link) => link.cloneNode(true));
+
+          mobileNav.replaceChildren(...permittedLinks);
+          mobileSignedIn.textContent = signedIn.textContent;
+        }
+
+        new MutationObserver(syncMobileNavigation).observe(desktopNav, {
+          childList: true,
+          subtree: true
+        });
+        syncMobileNavigation();
+
+        document.getElementById("inventoryMobileLogoutBtn")
+          .addEventListener("click", function () {
+            // The original inventory.js logout handler remains the single source of truth.
+            document.getElementById("logoutBtn").click();
+          });
+      });
+    </script>
   </body>
 </html>

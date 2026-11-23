@@ -11,10 +11,46 @@
     <link rel="stylesheet" href="financial.css">
 </head>
 <body data-role="Owner" data-module="financial">
+    <!-- =====================================
+         OWNER MOBILE NAVIGATION
+         Same mobile offcanvas shell as Owner Dashboard.
+         Visible only on phones below 576px.
+         ===================================== -->
+    <div
+        class="offcanvas offcanvas-start dashboard-sidebar d-sm-none"
+        tabindex="-1"
+        id="financialMobileMenu"
+        aria-labelledby="financialMobileMenuLabel"
+        style="--bs-offcanvas-width: min(85vw, 320px);">
+        <div class="offcanvas-header px-4 pt-4 pb-2">
+            <div>
+                <h5 id="financialMobileMenuLabel" class="fw-bold text-white mb-1">CCMC RetailFlow</h5>
+                <p class="sidebar-subtitle mb-0">RETAIL MANAGEMENT SYSTEM</p>
+            </div>
+            <button
+                type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="offcanvas"
+                aria-label="Close menu"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column px-4 pb-4">
+            <nav class="nav flex-column gap-2" aria-label="Owner mobile navigation">
+                <a href="../owner-dashboard.html" class="nav-link">Dashboard</a>
+                <a href="../inventory/inventory.html" class="nav-link">Inventory</a>
+                <a href="../financial/financial.html" class="nav-link active" aria-current="page">Financial Analytics</a>
+                <a href="../reports/reports.html" class="nav-link">Reports</a>
+            </nav>
+            <div class="sidebar-footer mt-auto pt-4">
+                <p class="text-white mb-2">Signed in as Owner</p>
+                <button type="button" id="financialMobileLogoutBtn" class="btn btn-outline-light w-100">Logout</button>
+            </div>
+        </div>
+    </div>
+
     <div class="container-fluid">
         <div class="row min-vh-100">
             <!-- Exact Owner Dashboard sidebar shell -->
-            <aside class="col-md-3 col-lg-2 dashboard-sidebar p-4">
+            <aside class="col-md-3 col-lg-2 dashboard-sidebar p-4 d-none d-sm-flex">
                 <h4 class="fw-bold text-white mb-1">CCMC RetailFlow</h4>
                 <p class="sidebar-subtitle mb-5">RETAIL MANAGEMENT SYSTEM</p>
                 <nav class="nav flex-column gap-2">
@@ -38,11 +74,21 @@
             <main class="col-md-9 col-lg-10 dashboard-main p-0">
                 <header class="dashboard-header p-4">
                     <div class="d-flex justify-content-between align-items-center">
+                        <!-- Same mobile-only hamburger button as Owner Dashboard. -->
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary d-sm-none"
+                            data-bs-toggle="offcanvas"
+                            data-bs-target="#financialMobileMenu"
+                            aria-controls="financialMobileMenu"
+                            aria-label="Open owner menu">
+                            <span aria-hidden="true">&#9776;</span>
+                        </button>
                         <div>
                             <h5 class="fw-bold mb-1">Financial Analytics</h5>
                             <p class="text-secondary mb-0">CCMC RetailFlow / Financial Analytics</p>
                         </div>
-                        <span class="badge text-bg-light" id="workspaceLabel">Owner Workspace</span>
+                        <span class="badge text-bg-light d-none d-sm-inline-block" id="workspaceLabel">Owner Workspace</span>
                     </div>
                 </header>
                 <section class="dashboard-content p-4 module-content">
@@ -77,5 +123,11 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="financial.js"></script>
+    <!-- Delegate mobile logout to the original financial.js logout handler. -->
+    <script>
+        document.getElementById("financialMobileLogoutBtn").addEventListener("click", function () {
+            document.getElementById("logoutBtn").click();
+        });
+    </script>
 </body>
 </html>
