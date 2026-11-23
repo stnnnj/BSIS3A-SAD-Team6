@@ -181,7 +181,104 @@ function updateBalanceMethod(){const cash=balanceMethod()==='Cash';$('resBalance
 function renderDetails(){const r=state.selected;$('resDetailTitle').textContent=r.reference+' · '+r.customer_name;$('resDetailMeta').textContent=(r.contact_no||'No contact')+' · Created '+date(r.order_date);$('resDetailStatus').textContent=r.status;$('resDetailStatus').className='rf-chip '+chip(r.status);$('resDetailItems').innerHTML=r.items.map(i=>`<tr><td>${esc(i.product_name)}</td><td>${i.quantity}</td><td>${money(i.unit_price)}</td><td>${money(i.quantity*i.unit_price)}</td></tr>`).join('');$('resDetailExpiry').textContent=dateOnly(r.expiry_date);$('resDetailTotal').textContent=money(r.total_amount);$('resDetailDeposit').textContent='−'+money(r.down_payment);$('resDetailBalance').textContent=money(r.balance_due);$('resDetailBanner').textContent=r.status==='Pending'?'Reservation saved · Awaiting balance. Reserved quantities are held, not deducted from on-hand inventory.':r.status==='Converted'?'Reservation converted to a completed sale. The deposit was applied once and stock was deducted once.':r.status==='Cancelled'?'Reservation cancelled. Its stock hold was released.':'Reservation expired. Its stock hold is no longer active.';
 $('resConvertPanel').classList.toggle('rf-hidden',r.status!=='Pending');$('resCancelPanel').classList.toggle('rf-hidden',r.status!=='Pending');$('resConvertedReceipt').classList.toggle('rf-hidden',r.status!=='Converted');$('resBalanceCash').value=r.balance_due.toFixed(2);$('resBalanceRef').value='';$('resCancelReason').value='';$('resVerified').checked=false;$('resRefundConfirmed').checked=false;updateBalanceMethod();updateChange();if(r.status==='Converted'){$('resConvertedReceipt').innerHTML=`<h3 class="mb-2">Completed sale</h3><p class="rf-muted">Receipt: ${esc(r.sale_receipt||'See Sales history')}</p><div class="rf-summary-row"><span>Remaining balance</span><strong>${money(0)}</strong></div>`}}
 function updateChange(){if(!state.selected)return;$('resBalanceChange').textContent=money(Math.max(0,num($('resBalanceCash').value)-Number(state.selected.balance_due)))}
-async function convert(){const r=state.selected;try{const method=balanceMethod();if(method==='Cash'&&num($('resBalanceCash').value)<r.balance_due)throw Error('Cash received must cover remaining balance.');if(method==='GCash'&&r.balance_due>0&&!$('resBalanceRef').value.trim())throw Error('Enter the verified GCash transaction reference.');if(!confirm('Confirm receipt of balance payment and convert this reservation to a sale?'))return;$('resConvertBtn').disabled=true;const result=await api('/reservations/'+r.order_id+'/convert',{method:'POST',body:JSON.stringify({payment_method:method,cash_received:method==='Cash'?num($('resBalanceCash').value):null,gcash_reference:method==='GCash'?$('resBalanceRef').value.trim():null})});toast(`Reservation converted. Receipt ${result.receipt_no}.`);await openReservation(r.order_id)}catch(e){toast(e.message,'error')}finally{$('resConvertBtn').disabled=false}}
+// Preserve the exact reviewed payment details until final confirmation; do not charge money here.
+let pendingConversion=null;
+let conversionSubmitting=false;
+function closeConvertReview(){
+ if(conversionSubmitting)return;
+ $('resConvertReviewModal').classList.add('rf-hidden');
+ $('resConvertReviewModal').setAttribute('aria-hidden','true');
+ document.body.classList.remove('rf-convert-open');
+ pendingConversion=null;
+ $('resConvertReviewVerified').checked=false;
+ $('resConvertReviewSubmit').disabled=true;
+ $('resConvertBtn').focus();
+}
+function updateConvertReviewButton(){
+ $('resConvertReviewSubmit').disabled=conversionSubmitting||!pendingConversion||!$('resConvertReviewVerified').checked;
+}
+function convert(){
+ if(conversionSubmitting||pendingConversion)return;
+ const r=state.selected;
+ try{
+  if(!r||r.status!=='Pending')throw Error('Only a pending reservation can be converted.');
+  const method=balanceMethod();
+  const balance=Number(r.balance_due);
+  if(!Number.isFinite(balance)||balance<0)throw Error('Invalid remaining balance. Refresh the reservation.');
+  let cash=null,reference=null;
+  if(method==='Cash'){
+   const input=$('resBalanceCash').value.trim();
+   if(!/^\d+(?:\.\d{1,2})?$/.test(input))throw Error('Enter a valid cash received amount (up to 2 decimal places).');
+   cash=Number(input);
+   if(!Number.isFinite(cash)||cash<balance)throw Error('Cash received must cover remaining balance.');
+  }else if(method==='GCash'){
+   reference=$('resBalanceRef').value.trim();
+   if(balance>0&&!reference)throw Error('Enter the verified GCash transaction reference.');
+  }else throw Error('Choose Cash or GCash.');
+  pendingConversion={order_id:r.order_id,reference:r.reference,customer_name:r.customer_name,
+   item_count:r.items.reduce((sum,item)=>sum+Number(item.quantity||0),0),total_amount:Number(r.total_amount),
+   down_payment:Number(r.down_payment),balance_due:balance,method,cash_received:cash,gcash_reference:reference};
+  const review=pendingConversion;
+  $('resConvertReviewReference').textContent=review.reference;
+  $('resConvertReviewCustomer').textContent=review.customer_name;
+  $('resConvertReviewItems').textContent=review.item_count+' unit(s)';
+  $('resConvertReviewTotal').textContent=money(review.total_amount);
+  $('resConvertReviewDeposit').textContent='−'+money(review.down_payment);
+  $('resConvertReviewBalance').textContent=money(review.balance_due);
+  $('resConvertReviewMethod').textContent=review.method;
+  const isCash=review.method==='Cash';
+  $('resConvertReviewCashRow').hidden=!isCash;
+  $('resConvertReviewChangeRow').hidden=!isCash;
+  $('resConvertReviewGCashRow').hidden=isCash;
+  $('resConvertReviewCash').textContent=isCash?money(review.cash_received):'';
+  $('resConvertReviewChange').textContent=isCash?money(Math.max(0,num(review.cash_received-review.balance_due))):'';
+  $('resConvertReviewGCash').textContent=!isCash?(review.gcash_reference||'No remaining balance'):'';
+  $('resConvertReviewVerifyText').textContent=review.balance_due>0
+   ? 'I confirm the remaining '+review.method+' payment has already been received or independently verified.'
+   : 'I confirm that this reservation is fully paid and ready to be completed as a sale.';
+  $('resConvertReviewVerified').checked=false;
+  $('resConvertReviewError').hidden=true;
+  updateConvertReviewButton();
+  $('resConvertReviewModal').classList.remove('rf-hidden');
+  $('resConvertReviewModal').setAttribute('aria-hidden','false');
+  document.body.classList.add('rf-convert-open');
+  $('resConvertReviewVerified').focus();
+ }catch(e){toast(e.message,'error')}
+}
+async function completeConversion(){
+ if(!pendingConversion||conversionSubmitting||!$('resConvertReviewVerified').checked)return;
+ const review=pendingConversion;
+ conversionSubmitting=true;
+ $('resConvertBtn').disabled=true;
+ $('resConvertReviewClose').disabled=true;
+ $('resConvertReviewBack').disabled=true;
+ $('resConvertReviewVerified').disabled=true;
+ $('resConvertReviewSubmit').textContent='Completing sale…';
+ $('resConvertReviewError').hidden=true;
+ updateConvertReviewButton();
+ let converted=false;
+ try{
+  const result=await api('/reservations/'+review.order_id+'/convert',{
+   method:'POST',body:JSON.stringify({payment_method:review.method,cash_received:review.cash_received,gcash_reference:review.gcash_reference})
+  });
+  converted=true;
+  conversionSubmitting=false;
+  closeConvertReview();
+  toast('Reservation converted. Receipt '+result.receipt_no+'.');
+  try{await openReservation(review.order_id)}catch{ /* openReservation handles the notification */ }
+ }catch(e){
+  if(!converted){$('resConvertReviewError').textContent=e.message;$('resConvertReviewError').hidden=false;}
+ }finally{
+  conversionSubmitting=false;
+  $('resConvertBtn').disabled=false;
+  $('resConvertReviewClose').disabled=false;
+  $('resConvertReviewBack').disabled=false;
+  $('resConvertReviewVerified').disabled=false;
+  $('resConvertReviewSubmit').textContent='Confirm & complete sale';
+  updateConvertReviewButton();
+ }
+}
+
 // Review form data before committing a cancellation; no refund is performed here.
 let pendingCancellation=null;
 let cancellationSaving=false;
@@ -257,7 +354,21 @@ document.addEventListener('keydown',e=>{
  const first=focusable[0],last=focusable[focusable.length-1];
  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
-});$('reservationSearch').oninput=renderReservations;$('resFilters').onclick=e=>{const b=e.target.closest('[data-filter]');if(!b)return;state.filter=b.dataset.filter;$('resFilters').querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));renderReservations()};$('reservationRows').onclick=e=>{const b=e.target.closest('[data-detail]');if(b)openReservation(Number(b.dataset.detail))};document.querySelectorAll('input[name="resBalanceMethod"]').forEach(r=>r.onchange=updateBalanceMethod);$('resBalanceCash').oninput=updateChange;$('resConvertBtn').onclick=convert;$('resConfirmCancel').onclick=cancel;
+});$('reservationSearch').oninput=renderReservations;$('resFilters').onclick=e=>{const b=e.target.closest('[data-filter]');if(!b)return;state.filter=b.dataset.filter;$('resFilters').querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));renderReservations()};$('reservationRows').onclick=e=>{const b=e.target.closest('[data-detail]');if(b)openReservation(Number(b.dataset.detail))};document.querySelectorAll('input[name="resBalanceMethod"]').forEach(r=>r.onchange=updateBalanceMethod);$('resBalanceCash').oninput=updateChange;$('resConvertBtn').onclick=convert;
+$('resConvertReviewVerified').onchange=updateConvertReviewButton;
+$('resConvertReviewSubmit').onclick=completeConversion;
+$('resConvertReviewModal').addEventListener('click',e=>{if(e.target.closest('[data-convert-close]'))closeConvertReview()});
+document.addEventListener('keydown',e=>{
+ const modal=$('resConvertReviewModal');if(modal.classList.contains('rf-hidden'))return;
+ if(e.key==='Escape'){e.preventDefault();closeConvertReview();return}
+ if(e.key!=='Tab')return;
+ const focusable=[...modal.querySelectorAll('button:not(:disabled),input:not(:disabled)')].filter(x=>x.offsetParent!==null);
+ if(!focusable.length)return;
+ const first=focusable[0],last=focusable[focusable.length-1];
+ if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+ else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+});
+$('resConfirmCancel').onclick=cancel;
 $('resCancelModalProceed').onclick=completeCancellation;
 $('resCancelModal').addEventListener('click',e=>{if(e.target.closest('[data-cancel-close]'))closeCancelModal()});
 document.addEventListener('keydown',e=>{
@@ -272,3 +383,5 @@ document.addEventListener('keydown',e=>{
 });
 await loadReservations()});
 })();
+
+

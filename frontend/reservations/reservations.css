@@ -86,3 +86,50 @@ body.rf-save-open { overflow:hidden; }
 @media(max-width:560px) { .rf-save-modal { padding:11px; } .rf-save-dialog-header { padding:21px 17px 16px; } .rf-save-dialog-header h2 { font-size:19px; } .rf-save-dialog-content { padding:16px 17px; } .rf-save-actions { padding:13px 17px 17px; } .rf-save-actions .btn { flex:1; padding:10px 8px; font-size:12px; } }
 @media print { .rf-save-modal { display:none!important; } }
 .rf-save-verify[hidden] { display:none!important; }
+
+
+/* Convert-reservation payment review - matches the in-page save and cancel dialogs. */
+body.rf-convert-open { overflow:hidden; }
+.rf-convert-modal { position:fixed; inset:0; z-index:2300; display:flex; align-items:center; justify-content:center; padding:16px; }
+.rf-convert-backdrop { position:absolute; inset:0; background:rgba(11,19,32,.62); backdrop-filter:blur(3px); }
+.rf-convert-dialog { position:relative; z-index:1; width:min(100%,540px); max-height:min(94vh,900px); display:flex; flex-direction:column; overflow:hidden; background:#fff; border:1px solid #dfe8ed; border-radius:18px; box-shadow:0 25px 80px rgba(2,17,33,.32); outline:none; }
+.rf-convert-dialog-header { position:relative; padding:23px 26px 18px; background:#f7fcfa; border-bottom:1px solid #e0ece9; flex-shrink:0; }
+.rf-convert-eyebrow { margin-bottom:7px; font-size:10px; letter-spacing:.14em; font-weight:800; color:#16806b; }
+.rf-convert-dialog-header h2 { margin:0 32px 6px 0; color:#162b43; font-size:21px; font-weight:800; letter-spacing:-.02em; }
+.rf-convert-dialog-header p { margin:0; color:#667789; font-size:13px; line-height:1.5; }
+.rf-convert-close { position:absolute; top:13px; right:15px; border:0; width:35px; height:35px; background:transparent; color:#647687; border-radius:9px; font-size:25px; line-height:1; }
+.rf-convert-close:hover { background:#e7f2ef; color:#1d5f55; }
+.rf-convert-dialog-body { padding:20px 26px; overflow:auto; }
+.rf-convert-details { display:grid; gap:10px; padding:14px 16px; border:1px solid #e2e9ef; border-radius:11px; background:#f6f8fa; }
+.rf-convert-details > div, .rf-convert-payment-details > div { display:flex; justify-content:space-between; align-items:baseline; gap:14px; font-size:13px; }
+.rf-convert-details span, .rf-convert-payment-details span { color:#617386; }
+.rf-convert-details strong, .rf-convert-payment-details strong { color:#172b44; text-align:right; font-variant-numeric:tabular-nums; max-width:60%; overflow-wrap:anywhere; }
+.rf-convert-details .rf-convert-due { border-top:1px solid #dce6e9; margin-top:3px; padding-top:10px; font-size:16px; font-weight:800; }
+.rf-convert-details .rf-convert-due strong { color:#147963; }
+.rf-convert-payment-details { display:grid; gap:10px; margin-top:14px; padding:0 3px; }
+.rf-convert-verify {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: #1f2937;
+    font-weight: 650;
+    font-size: 12px;
+    line-height: 1.55;
+    cursor: pointer;
+    margin-top: 18px;
+}
+.rf-convert-verify input { flex:0 0 17px; margin-top:2px; width:17px; height:17px; accent-color:#17816a; }
+.rf-convert-notice { background:#f7f9fb; color:#607487; border-left:3px solid #a2b4c2; border-radius:7px; padding:10px 13px; font-size:12px; line-height:1.55; margin:12px 0 0; }
+.rf-convert-error { padding:11px 13px; background:#fff1f2; border:1px solid #e9bdc2; border-radius:9px; color:#982f42; font-size:12px; margin-top:12px; }
+.rf-convert-dialog-actions { display:flex; justify-content:flex-end; gap:10px; padding:17px 26px 21px; border-top:1px solid #e8eef2; flex-shrink:0; }
+.rf-convert-dialog-actions .btn { min-height:43px; border-radius:10px; padding:10px 17px; font-size:13px; font-weight:700; }
+.rf-convert-dialog-actions .btn:disabled { opacity:.5; cursor:not-allowed; }
+.rf-convert-payment-details > div[hidden] { display:none!important; }
+@media(max-width:560px) { .rf-convert-modal { padding:11px; } .rf-convert-dialog-header { padding:20px 17px 15px; } .rf-convert-dialog-header h2 { font-size:19px; } .rf-convert-dialog-body { padding:15px 17px; } .rf-convert-dialog-actions { padding:13px 17px 17px; } .rf-convert-dialog-actions .btn { flex:1; padding:10px 8px; font-size:12px; } }
+@media print { .rf-convert-modal { display:none!important; } }
+#resDetailBanner {
+    display: none !important;
+}   
