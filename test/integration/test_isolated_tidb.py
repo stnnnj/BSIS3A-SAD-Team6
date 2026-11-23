@@ -247,4 +247,3 @@ def test_can_read_existing_test_table(
         result = cursor.fetchone()
 
     assert int(result["total"]) >= 0
-s
